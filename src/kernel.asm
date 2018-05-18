@@ -4,6 +4,7 @@
 ; ==============================================================================
 
 %include "imprimir.mac"
+extern GDT_DESC
 
 global start
 
@@ -41,13 +42,17 @@ start:
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
     
     ; Habilitar A20
-    
+    call habilitar_A20
     ; Cargar la GDT
-
+    lgdt [GDT_DESC]
     ; Setear el bit PE del registro CR0
-    
+    mov eax, CR0
+    or eax, 1
+    mov CR0, eax
     ; Saltar a modo protegido
+    jmp 0xA0:mp
 
+    mp:
     ; Establecer selectores de segmentos
 
     ; Establecer la base de la pila
@@ -56,7 +61,8 @@ start:
 
     ; Inicializar pantalla
     
-    ; Inicializar el manejador de memoria
+    ; hasta aca ^   
+    ; Inicialiar el manejador de memoria
  
     ; Inicializar el directorio de paginas
     

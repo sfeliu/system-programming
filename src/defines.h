@@ -32,6 +32,10 @@
 #define GDT_COUNT 30
 
 #define GDT_IDX_NULL_DESC           0
+#define GDT_IDX_CODE_LVL_0          20
+#define GDT_IDX_CODE_LVL_3          21
+#define GDT_IDX_DATA_LVL_0          22
+#define GDT_IDX_DATA_LVL_3          23
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
