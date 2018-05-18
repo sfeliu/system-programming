@@ -41,6 +41,7 @@ start:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
     
+    xchg bx, bx
     ; Habilitar A20
     call habilitar_A20
     ; Cargar la GDT
@@ -52,6 +53,7 @@ start:
     ; Saltar a modo protegido
     jmp 0xA0:mp
 
+BITS 32    
     mp:
     ; Establecer selectores de segmentos
 
