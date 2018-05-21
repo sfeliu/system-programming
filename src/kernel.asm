@@ -56,7 +56,12 @@ start:
 BITS 32    
     mp:
     ; Establecer selectores de segmentos
-
+    mov esp, 0xb0           ; nivel 0 - datos tipo read/write
+    mov ss, esp             ; ss: Pila, 
+    mov es, esp             ; es: Pantalla
+    mov ds, esp             ; ds: Segmento de datos
+    mov esp, 0x27000
+    mov ebp, 0x27000
     ; Establecer la base de la pila
     
     ; Imprimir mensaje de bienvenida
