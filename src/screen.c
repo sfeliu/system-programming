@@ -70,5 +70,17 @@ void screen_drawBox(uint32_t fInit,
 }
 
 
+void black_out_screen(){
+    uint8_t character = 0x30;                           /* Caracter '0' */
+    uint8_t attr = (VERDE << 4 | VERDE);                /* Fondo negro y caracter negro */
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) 0x0;
+    for (int f = 0; f < VIDEO_FILS; f++) {
+    for (int c = 0; c < VIDEO_COLS; c++) {
+        p[f][c].c = character;
+        p[f][c].a = attr;
+    }}
+}
+
+
 
 

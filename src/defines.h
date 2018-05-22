@@ -36,6 +36,7 @@
 #define GDT_IDX_CODE_LVL_3          21
 #define GDT_IDX_DATA_LVL_0          22
 #define GDT_IDX_DATA_LVL_3          23
+#define GDT_IDX_VIDEO_DATA          24
 
 /* Offsets en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -46,5 +47,24 @@
 #define BOOTSECTOR              0x00001000 /* direccion fisica de comienzo del bootsector (copiado) */
 #define KERNEL                  0x00001200 /* direccion fisica de comienzo del kernel */
 #define VIDEO                   0x000B8000 /* direccion fisica del buffer de video */
+
+/* Colores de pantalla */
+/* -------------------------------------------------------------------------- */
+#define NEGRO              		0x0 /* Caracter | 4 << FONDO */
+#define AZUL              		0x1 /* Caracter | 4 << FONDO */
+#define VERDE              		0x2 /* Caracter | 4 << FONDO */
+#define CYAN              		0x3 /* Caracter | 4 << FONDO */
+#define ROJO              		0x4 /* Caracter | 4 << FONDO */
+#define MAGENTA              	0x5 /* Caracter | 4 << FONDO */
+#define MARRON            		0x6 /* Caracter | 4 << FONDO */
+#define GRIS_CLARO             	0x7 /* Caracter | 4 << FONDO */
+#define GRIS              		0x8 /* Caracter | 4 << FONDO */
+#define CELESTE            		0x9 /* Caracter | 4 << FONDO */
+#define VERDE_CLARO             0xA /* Caracter | 4 << FONDO */
+#define CYAN_CLARO              0xB /* Caracter | 4 << FONDO */
+#define ROJO_CLARO              0xC /* Caracter | 4 << FONDO */
+#define MAGENTA_CLARO         	0xD /* Caracter | 4 << FONDO */
+#define AMARILLO              	0xE /* Caracter | 4 << FONDO */
+#define BLANCO               	0xF /* Caracter | 4 << FONDO */
 
 #endif  /* !__DEFINES_H__ */

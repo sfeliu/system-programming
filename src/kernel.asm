@@ -4,6 +4,7 @@
 ; ==============================================================================
 
 %include "imprimir.mac"
+extern black_out_screen
 extern GDT_DESC
 
 global start
@@ -56,18 +57,23 @@ start:
 BITS 32    
     mp:
     ; Establecer selectores de segmentos
-    mov esp, 0xb0           ; nivel 0 - datos tipo read/write
-    mov ss, esp             ; ss: Pila, 
-    mov es, esp             ; es: Pantalla
-    mov ds, esp             ; ds: Segmento de datos
+    mov ax, 0xb0           ; nivel 0 - datos tipo read/write
+    mov ss, ax             ; ss: Pila, 
+    mov ds, ax             ; ds: Segmento de datos
+    mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
+    mov gs, ax             ; ss: Pila, 
+    mov fs, ax             ; ss: Pila, 
+    mov es, ax             ; es: Pantalla
+    ; Establecer la base de la pila
     mov esp, 0x27000
     mov ebp, 0x27000
-    ; Establecer la base de la pila
-    
     ; Imprimir mensaje de bienvenida
-
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0x02, 0
     ; Inicializar pantalla
+    mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
+    mov ds, ax             ; ds: Segmento de datos
     
+    call black_out_screen    
     ; hasta aca ^   
     ; Inicialiar el manejador de memoria
  

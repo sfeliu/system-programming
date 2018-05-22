@@ -80,6 +80,20 @@ gdt_entry gdt[GDT_COUNT] = {
         (uint8_t)     0x01,           /* db           */
         (uint8_t)     0x01,           /* g            */
         (uint8_t)     0x00,           /* base[31:24]  */
+    },[GDT_IDX_VIDEO_DATA] = (gdt_entry) {
+        (uint16_t)    0x1F40,         /* limit[0:15]  */
+        (uint16_t)    0x8000,         /* base[0:15]   */
+        (uint8_t)     0x0B,           /* base[23:16]  */
+        (uint8_t)     0x02,           /* type         */
+        (uint8_t)     0x01,           /* s            */
+        (uint8_t)     0x00,           /* dpl          */
+        (uint8_t)     0x01,           /* p            */
+        (uint8_t)     0x00,           /* limit[16:19] */
+        (uint8_t)     0x00,           /* avl          */
+        (uint8_t)     0x00,           /* l            */
+        (uint8_t)     0x01,           /* db           */
+        (uint8_t)     0x00,           /* g            */
+        (uint8_t)     0x00,           /* base[31:24]  */
     },   
 };
 

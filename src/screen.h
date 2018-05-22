@@ -30,4 +30,6 @@ void screen_drawBox(uint32_t fInit, uint32_t cInit,
                     uint32_t fSize, uint32_t cSize,
                     uint8_t character, uint8_t attr );
 
+void black_out_screen();
+
 #endif  /* !__SCREEN_H__ */
