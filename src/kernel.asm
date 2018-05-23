@@ -6,6 +6,10 @@
 %include "imprimir.mac"
 extern black_out_screen
 extern GDT_DESC
+extern idt_inicializar
+extern IDT_DESC
+extern resetear_pic
+extern habilitar_pic
 
 global start
 
@@ -42,7 +46,7 @@ start:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
     
-    xchg bx, bx
+
     ; Habilitar A20
     call habilitar_A20
     ; Cargar la GDT
@@ -60,7 +64,6 @@ BITS 32
     mov ax, 0xb0           ; nivel 0 - datos tipo read/write
     mov ss, ax             ; ss: Pila, 
     mov ds, ax             ; ds: Segmento de datos
-    mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
     mov gs, ax             ; ss: Pila, 
     mov fs, ax             ; ss: Pila, 
     mov es, ax             ; es: Pantalla
@@ -72,9 +75,10 @@ BITS 32
     ; Inicializar pantalla
     mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
     mov ds, ax             ; ds: Segmento de datos
-    
     call black_out_screen    
-    ; hasta aca ^   
+    mov ax, 0xb0           ; nivel 0 - datos tipo read/write
+    mov ds, ax             ; ds: Segmento de datos ---- Restauro DS
+
     ; Inicialiar el manejador de memoria
  
     ; Inicializar el directorio de paginas
@@ -90,11 +94,12 @@ BITS 32
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-    
+    call idt_inicializar
     ; Cargar IDT
- 
+    lidt [IDT_DESC]
     ; Configurar controlador de interrupciones
-
+    call resetear_pic
+    call habilitar_pic
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones

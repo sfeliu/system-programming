@@ -5,11 +5,15 @@
 ; definicion de rutinas de atencion de interrupciones
 
 %include "imprimir.mac"
+extern print
 
 BITS 32
 
 sched_tarea_offset:     dd 0x00
 sched_tarea_selector:   dw 0x00
+
+msg_int_0: db     'Error divición', 0
+msg_int_13: db     'General protection exception', 0
 
 ;; PIC
 extern fin_intr_pic1
@@ -26,6 +30,11 @@ global _isr%1
 
 _isr%1:
     mov eax, %1
+    push 0xF
+    push 0x0
+    push 0x0
+    push msg_int_%1
+    call print
     jmp $
 
 %endmacro
@@ -41,7 +50,7 @@ isrClock:            db '|/-\'
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
 ISR 0
-
+ISR 13
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
@@ -49,6 +58,7 @@ ISR 0
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+
 
 ;;
 ;; Rutinas de atención de las SYSCALLS
