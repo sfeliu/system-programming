@@ -97,6 +97,9 @@ BITS 32
     call idt_inicializar
     ; Cargar IDT
     lidt [IDT_DESC]
+    
+    mov bx, 0
+    div bx
     ; Configurar controlador de interrupciones
     call resetear_pic
     call habilitar_pic
