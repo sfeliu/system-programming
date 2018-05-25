@@ -72,7 +72,7 @@ void screen_drawBox(uint32_t fInit,
 
 void black_out_screen(){
     uint8_t character = 0x30;                           /* Caracter '0' */
-    uint8_t attr = (VERDE << 4 | VERDE);                /* Fondo negro y caracter negro */
+    uint8_t attr = (C_BG_BLACK | C_FG_BLACK);                /* Fondo negro y caracter negro */
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) 0x0;
     for (int f = 0; f < VIDEO_FILS; f++) {
     for (int c = 0; c < VIDEO_COLS; c++) {
@@ -81,6 +81,18 @@ void black_out_screen(){
     }}
 }
 
-
+void imprimirTecla(uint8_t scanCode){
+    uint16_t attr = 0x0F;
+    if(scanCode == 0x2) print((uint8_t*) "1", 79, 0, attr);
+    if(scanCode == 0x3) print((uint8_t*) "2", 79, 0, attr);
+    if(scanCode == 0x4) print((uint8_t*) "3", 79, 0, attr);
+    if(scanCode == 0x5) print((uint8_t*) "4", 79, 0, attr);
+    if(scanCode == 0x6) print((uint8_t*) "5", 79, 0, attr);
+    if(scanCode == 0x7) print((uint8_t*) "6", 79, 0, attr);
+    if(scanCode == 0x8) print((uint8_t*) "7", 79, 0, attr);
+    if(scanCode == 0x9) print((uint8_t*) "8", 79, 0, attr);
+    if(scanCode == 0xA) print((uint8_t*) "9", 79, 0, attr);
+    if(scanCode == 0xB) print((uint8_t*) "0", 79, 0, attr);
+}
 
 

@@ -6,6 +6,7 @@
 
 %include "imprimir.mac"
 extern print
+extern imprimirTecla
 
 BITS 32
 
@@ -47,6 +48,7 @@ msg_int_31: db      'Excepción 31: Reservada', 0
 
 ;; PIC
 extern fin_intr_pic1
+extern fin_intr_pic2
 
 ;; Sched
 extern sched_proximoIndice
@@ -114,15 +116,32 @@ ISR 31
 ;;
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
-
+global _isr32
+_isr32:
+    ;xchg bx, bx
+    
+    call proximoReloj
+    iret
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
-
-
+global _isr33
+_isr33:
+    ;xchg bx, bx
+    
+    call escribirTecla
+    iret
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
+global _isr66
+_isr66:
+    pushad
+    call fin_intr_pic1
+    popad
+    mov eax, 0x42
+    iret
+
 
 %define sysNumero   0x542
 %define sysEscribir 0x824
@@ -133,6 +152,7 @@ ISR 31
 ;; -------------------------------------------------------------------------- ;;
 proximoReloj:
         pushad
+        call fin_intr_pic1
         inc DWORD [isrnumero]
         mov ebx, [isrnumero]
         cmp ebx, 0x4
@@ -144,5 +164,14 @@ proximoReloj:
                 imprimir_texto_mp ebx, 1, 0x0f, 49, 79
                 popad
         ret
-        
+
+escribirTecla:
+        pushad
+        call fin_intr_pic1
+        in al, 0x60
+        push eax
+        call imprimirTecla
+        pop eax
+        popad
+        ret
         

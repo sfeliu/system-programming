@@ -67,4 +67,5 @@
 #define AMARILLO              	0xE /* Caracter | 4 << FONDO */
 #define BLANCO               	0xF /* Caracter | 4 << FONDO */
 
+
 #endif  /* !__DEFINES_H__ */

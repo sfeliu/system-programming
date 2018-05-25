@@ -31,5 +31,6 @@ void screen_drawBox(uint32_t fInit, uint32_t cInit,
                     uint8_t character, uint8_t attr );
 
 void black_out_screen();
+void imprimirTecla(uint8_t scanCode);
 
 #endif  /* !__SCREEN_H__ */

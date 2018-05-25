@@ -97,15 +97,16 @@ BITS 32
     call idt_inicializar
     ; Cargar IDT
     lidt [IDT_DESC]
-    
-    mov bx, 0
-    div bx
+    ; Descomentar para testear excepcion divición por cero
+    ;mov bx, 0
+    ;div bx
     ; Configurar controlador de interrupciones
     call resetear_pic
     call habilitar_pic
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
+    sti
 
     ; Saltar a la primera tarea: Idle
 
