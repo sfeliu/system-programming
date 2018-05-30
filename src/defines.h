@@ -47,6 +47,8 @@
 #define BOOTSECTOR              0x00001000 /* direccion fisica de comienzo del bootsector (copiado) */
 #define KERNEL                  0x00001200 /* direccion fisica de comienzo del kernel */
 #define VIDEO                   0x000B8000 /* direccion fisica del buffer de video */
+#define AREA_LIBRE_KERNEL		0x00100000 /* direccion fisica del comienzo del area libre del kernel*/
+#define AREA_LIBRE_TAREAS		0x00400000 /* direccion fisica del comienzo del area libre de tareas*/
 
 /* Colores de pantalla */
 /* -------------------------------------------------------------------------- */

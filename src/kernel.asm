@@ -10,6 +10,10 @@ extern idt_inicializar
 extern IDT_DESC
 extern resetear_pic
 extern habilitar_pic
+extern mmu_inicializar
+extern mmu_inicializar_dir_kernel
+extern mmu_inicializar_dir_tarea
+extern kernel_page_directory
 
 global start
 
@@ -45,7 +49,6 @@ start:
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
-    
 
     ; Habilitar A20
     call habilitar_A20
@@ -58,14 +61,14 @@ start:
     ; Saltar a modo protegido
     jmp 0xA0:mp
 
-BITS 32    
+BITS 32
     mp:
     ; Establecer selectores de segmentos
     mov ax, 0xb0           ; nivel 0 - datos tipo read/write
-    mov ss, ax             ; ss: Pila, 
+    mov ss, ax             ; ss: Pila,
     mov ds, ax             ; ds: Segmento de datos
-    mov gs, ax             ; ss: Pila, 
-    mov fs, ax             ; ss: Pila, 
+    mov gs, ax             ; ss: Pila,
+    mov fs, ax             ; ss: Pila,
     mov es, ax             ; es: Pantalla
     ; Establecer la base de la pila
     mov esp, 0x27000
@@ -75,18 +78,22 @@ BITS 32
     ; Inicializar pantalla
     mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
     mov ds, ax             ; ds: Segmento de datos
-    call black_out_screen    
+    call black_out_screen
     mov ax, 0xb0           ; nivel 0 - datos tipo read/write
     mov ds, ax             ; ds: Segmento de datos ---- Restauro DS
 
     ; Inicialiar el manejador de memoria
- 
+	call mmu_inicializar
     ; Inicializar el directorio de paginas
-    
+	call mmu_inicializar_dir_kernel
+	; call mmu_inicializar_dir_tarea
     ; Cargar directorio de paginas
-
+	mov eax, kernel_page_directory
+	mov cr3, eax
     ; Habilitar paginacion
-    
+	mov eax, cr0
+	or eax, 0x80000000
+	mov cr0, eax
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
