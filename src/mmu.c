@@ -15,8 +15,10 @@ void mmu_inicializar()
 
 void mmu_inicializar_dir_kernel()
 {
-	kernel_page_directory = (directory_entry_t*)0x27000;
+	kernel_page_directory = (directory_entry_t*) prox_pag_libre_kernel;
 	table_entry_t* page_table = (table_entry_t*) 0x28000;
+
+	int j = 0;
 
 	for(int i = 0; i < 1024; i++)
 	{
@@ -25,7 +27,7 @@ void mmu_inicializar_dir_kernel()
 		page_table[i] = (table_entry_t)
 		{
 			.p = 1,
-			.r_w = 1,
+			.rw = 1,
 			.us = 0,
 			.pwt = 0,
 			.psv = 0,
@@ -34,14 +36,14 @@ void mmu_inicializar_dir_kernel()
 			.pat = 0,
 			.g = 0,
 			.ignored = 0,
-			.dir_memory = i
+			.dir_memory = i + 1024*j
 		};
 	}
 
-	kernel_page_directory[0] = (directory_entry_t)
+	kernel_page_directory[j] = (directory_entry_t)
 	{
 		.p = 1,
-		.r_w = 1,
+		.rw = 1,
 		.us = 0,
 		.pwt = 0,
 		.pcd = 0,
@@ -49,46 +51,96 @@ void mmu_inicializar_dir_kernel()
 		.ignored1 = 0,
 		.ps = 0,
 		.ignored4 = 0,
-		.dir_page = 0x28
+		.dir_table = 0x28
 	};
 }
 
-// void mmu_inicializar_dir_tarea()
-// {
-// 	directory_entry_t* tarea_page_directory = (directory_entry_t*) FISICA0;
-// 	table_entry_t* page_table = (table_entry_t*) FISICA1;
-//
-// 	for(int i = 0; i < 1024; i++)
-// 	{
-// 		tarea_page_directory[i].p = 0;
-//
-// 		page_table[i] =
-// 		{
-// 			.p = 1,
-// 			.r_w = 1,
-// 			.us = 0,
-// 			.pwt = 0,
-// 			.psv = 0,
-// 			.a = 0,
-// 			.d = 0,
-// 			.pat = 0,
-// 			.g = 0,
-// 			.ignored = 0,
-// 			.dir_memory = i
-// 		};
-// 	}
-//
-// 	tarea_page_directory[0] =
-// 	{
-// 		.p = 1,
-// 		.r_w = 1,
-// 		.us = 0,
-// 		.pwt = 0,
-// 		.pcd = 0,
-// 		.a = 0,
-// 		.ignored1 = 0,
-// 		.ps = 0,
-// 		.ignored4 = 0,
-// 		.dir_page = FIS
-// 	};
-// }
+void mmu_inicializar_dir_tarea()
+{
+	directory_entry_t* tarea_page_directory = (directory_entry_t*) mmu_prox_pag_fisica_libre_tarea();
+	table_entry_t* page_table = (table_entry_t*) mmu_prox_pag_fisica_libre_tarea();
+
+	int j = 0;
+
+	for(int i = 0; i < 1024; i++)
+	{
+		page_table[i] = (table_entry_t)
+		{
+			.p = 1,
+			.rw = 1,
+			.us = 0,
+			.pwt = 0,
+			.psv = 0,
+			.a = 0,
+			.d = 0,
+			.pat = 0,
+			.g = 0,
+			.ignored = 0,
+			.dir_memory = i + 0x800000 + 1024*j
+		};
+	}
+
+	tarea_page_directory[j] = (directory_entry_t)
+	{
+		.p = 1,
+		.rw = 1,
+		.us = 0,
+		.pwt = 0,
+		.pcd = 0,
+		.a = 0,
+		.ignored1 = 0,
+		.ps = 0,
+		.ignored4 = 0,
+		.dir_table = (prox_pag_libre_tarea - (j+1)*4096) << 3
+	};
+}
+
+uint32_t mmu_prox_pag_fisica_libre_kernel()
+{
+	uint32_t temp = prox_pag_libre_kernel;
+	prox_pag_libre_kernel += 4096;
+	return temp;
+}
+
+uint32_t mmu_prox_pag_fisica_libre_tarea()
+{
+	uint32_t temp = prox_pag_libre_tarea;
+	prox_pag_libre_tarea += 4096;
+	return temp;
+}
+
+void mmu_mapearPagina(uint32_t virtual, uint32_t cr3, uint32_t fisica, uint8_t rw_d, uint8_t rw_tab, uint8_t us_d, uint8_t us_tab)
+{
+	uint32_t i_dir = virtual >> 22;
+	uint32_t i_tab = (virtual << 10) >> 22;
+
+    directory_entry_t* directory = (directory_entry_t*) cr3;
+	if(directory[i_dir].p == 0)
+	{
+		directory[i_dir].p = 1;
+		directory[i_dir].rw = rw_d;
+		directory[i_dir].us = us_d;
+		directory[i_dir].dir_table = mmu_prox_pag_fisica_libre_kernel() >> 12;
+	}
+
+	table_entry_t* table = (table_entry_t*) (directory[i_dir].dir_table << 12);
+	table[i_tab].dir_memory = fisica >> 12;
+	table[i_tab].p = 1;
+	table[i_tab].rw = rw_tab;
+	table[i_tab].us = us_tab;
+}
+
+void mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
+{
+	uint32_t i_dir = virtual >> 22;
+	uint32_t i_tab = (virtual << 10) >> 22;
+
+    directory_entry_t* directory = (directory_entry_t*) cr3;
+	if(directory[i_dir].p == 0)
+	{
+		return;
+	}
+
+	table_entry_t* table = (table_entry_t*) (directory[i_dir].dir_table << 12);
+	table[i_tab].p = 0;
+}

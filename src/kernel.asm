@@ -86,9 +86,8 @@ BITS 32
 	call mmu_inicializar
     ; Inicializar el directorio de paginas
 	call mmu_inicializar_dir_kernel
-	; call mmu_inicializar_dir_tarea
     ; Cargar directorio de paginas
-	mov eax, kernel_page_directory
+	mov eax, [kernel_page_directory]
 	mov cr3, eax
     ; Habilitar paginacion
 	mov eax, cr0
