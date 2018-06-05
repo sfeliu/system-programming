@@ -52,6 +52,8 @@ void mmu_inicializar();
 
 void mmu_inicializar_dir_kernel();
 void mmu_inicializar_dir_tarea();
+void mmu_mapearPagina(uint32_t virtual, uint32_t cr3, uint32_t fisica, uint8_t rw_d, uint8_t rw_tab, uint8_t us_d, uint8_t us_tab);
+
 
 uint32_t mmu_prox_pag_fisica_libre_kernel();
 uint32_t mmu_prox_pag_fisica_libre_tarea();
