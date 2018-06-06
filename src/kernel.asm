@@ -14,6 +14,7 @@ extern mmu_inicializar
 extern mmu_inicializar_dir_kernel
 extern mmu_inicializar_dir_tarea
 extern kernel_page_directory
+extern tss_inicializar
 
 global start
 
@@ -94,7 +95,7 @@ BITS 32
 	or eax, 0x80000000
 	mov cr0, eax
     ; Inicializar tss
-
+	call tss_inicializar
     ; Inicializar tss de la tarea Idle
 
     ; Inicializar el scheduler

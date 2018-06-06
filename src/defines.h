@@ -32,6 +32,8 @@
 #define GDT_COUNT 30
 
 #define GDT_IDX_NULL_DESC           0
+#define GDT_IDX_INITIAL_TASK        1
+#define GDT_IDX_IDLE_TASK           2
 #define GDT_IDX_CODE_LVL_0          20
 #define GDT_IDX_CODE_LVL_3          21
 #define GDT_IDX_DATA_LVL_0          22

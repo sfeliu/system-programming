@@ -94,7 +94,35 @@ gdt_entry gdt[GDT_COUNT] = {
         (uint8_t)     0x01,           /* db           */
         (uint8_t)     0x00,           /* g            */
         (uint8_t)     0x00,           /* base[31:24]  */
-    },   
+    },[GDT_IDX_INITIAL_TASK] = (gdt_entry) {
+        (uint16_t)    0x0067,         /* limit[0:15]  */
+        (uint16_t)    0x0000,         /* base[0:15]   */
+        (uint8_t)     0x00,           /* base[23:16]  */
+        (uint8_t)     0x09,           /* type         */
+        (uint8_t)     0x00,           /* s            */
+        (uint8_t)     0x00,           /* dpl          */
+        (uint8_t)     0x00,           /* p            */
+        (uint8_t)     0x00,           /* limit[16:19] */
+        (uint8_t)     0x00,           /* avl          */
+        (uint8_t)     0x00,           /* l            */
+        (uint8_t)     0x01,           /* db           */
+        (uint8_t)     0x00,           /* g            */
+        (uint8_t)     0x00,           /* base[31:24]  */
+    },[GDT_IDX_IDLE_TASK] = (gdt_entry) {
+        (uint16_t)    0x0067,         /* limit[0:15]  */
+        (uint16_t)    0x4000,         /* base[0:15]   */
+        (uint8_t)     0x01,           /* base[23:16]  */
+        (uint8_t)     0x09,           /* type         */
+        (uint8_t)     0x00,           /* s            */
+        (uint8_t)     0x00,           /* dpl          */
+        (uint8_t)     0x00,           /* p            */
+        (uint8_t)     0x00,           /* limit[16:19] */
+        (uint8_t)     0x00,           /* avl          */
+        (uint8_t)     0x00,           /* l            */
+        (uint8_t)     0x01,           /* db           */
+        (uint8_t)     0x00,           /* g            */
+        (uint8_t)     0x00,           /* base[31:24]  */
+    },
 };
 
 gdt_descriptor GDT_DESC = {

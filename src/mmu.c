@@ -9,7 +9,7 @@
 
 void mmu_inicializar()
 {
-	prox_pag_libre_kernel = AREA_LIBRE_KERNEL; //=27000
+	prox_pag_libre_kernel = AREA_LIBRE_KERNEL;
 	prox_pag_libre_tarea = AREA_LIBRE_TAREAS;
 }
 
@@ -55,28 +55,25 @@ void mmu_inicializar_dir_kernel()
 	};
 }
 
-void mmu_inicializar_dir_tarea(uint32_t* codigo, uint32_t size)
-{	
-
-	uint32_t cant_paginas = (uint32_t)size/4096; // ciel(size/4096) 
+uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo)
+{
 	directory_entry_t* tarea_page_directory = (directory_entry_t*) mmu_prox_pag_fisica_libre_tarea();
 	uint8_t rw = 1;
 	uint8_t us = 0;
-	for (int i = 0; i < cant_paginas; ++i)
+
+	uint32_t prox_pag_fisica = mmu_prox_pag_fisica_libre_tarea();
+	mmu_mapearPagina((uint32_t)(0x8000000), (uint32_t)tarea_page_directory, prox_pag_fisica, rw, rw, us, us);
+
+	if(codigo == 0) return (uint32_t)tarea_page_directory;
+
+	uint8_t* guardarAca = (uint8_t*)prox_pag_fisica;
+	for(int j = 0; j < 4096; j++)
 	{
-		uint32_t prox_pag_fisica = mmu_prox_pag_fisica_libre_tarea();
-		mmu_mapearPagina((uint32_t) (0x8000000 + i*4096), (uint32_t)tarea_page_directory, prox_pag_fisica, rw, rw, us, us);
-		uint32_t* guardarAca = (uint32_t*)prox_pag_fisica;
-		for(int j = 0; j < 4096; j++)
-		{
-			guardarAca[j] = codigo[j + i*4096];
-		}
+		guardarAca[j] = codigo[j];
 	}
-
-
-
+	return (uint32_t)tarea_page_directory;
 }
-	
+
 uint32_t mmu_prox_pag_fisica_libre_kernel()
 {
 	uint32_t temp = prox_pag_libre_kernel;
