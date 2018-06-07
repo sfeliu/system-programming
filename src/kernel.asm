@@ -95,12 +95,14 @@ BITS 32
 	or eax, 0x80000000
 	mov cr0, eax
     ; Inicializar tss
-	call tss_inicializar
+    xchg bx, bx
+    call tss_inicializar
     ; Inicializar tss de la tarea Idle
 
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+    
     call idt_inicializar
     ; Cargar IDT
     lidt [IDT_DESC]
