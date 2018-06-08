@@ -15,6 +15,10 @@ extern mmu_inicializar_dir_kernel
 extern mmu_inicializar_dir_tarea
 extern kernel_page_directory
 extern tss_inicializar
+extern tss_inicializar_idle
+extern tss_nueva_tarea
+extern inicializar_entrada_gdt
+extern prox_entrada_libre_gdt
 
 global start
 
@@ -53,12 +57,15 @@ start:
 
     ; Habilitar A20
     call habilitar_A20
+
     ; Cargar la GDT
     lgdt [GDT_DESC]
+
     ; Setear el bit PE del registro CR0
     mov eax, CR0
     or eax, 1
     mov CR0, eax
+
     ; Saltar a modo protegido
     jmp 0xA0:mp
 
@@ -71,11 +78,14 @@ BITS 32
     mov gs, ax             ; ss: Pila,
     mov fs, ax             ; ss: Pila,
     mov es, ax             ; es: Pantalla
+
     ; Establecer la base de la pila
     mov esp, 0x27000
     mov ebp, 0x27000
+
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0x02, 0
+
     ; Inicializar pantalla
     mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
     mov ds, ax             ; ds: Segmento de datos
@@ -85,43 +95,53 @@ BITS 32
 
     ; Inicialiar el manejador de memoria
 	call mmu_inicializar
+
     ; Inicializar el directorio de paginas
 	call mmu_inicializar_dir_kernel
+
     ; Cargar directorio de paginas
 	mov eax, [kernel_page_directory]
 	mov cr3, eax
+
     ; Habilitar paginacion
 	mov eax, cr0
 	or eax, 0x80000000
 	mov cr0, eax
 
-
     ; Inicializar tss
-    xchg bx, bx
-    push proseguir
-    call tss_inicializar
+	xchg bx, bx
+	push proseguir
+	call tss_inicializar
+
     ; Inicializar tss de la tarea Idle
-    mov ax, 0x8
-    ltr ax
-    proseguir:
-    jmp 0x10:0
+	call tss_inicializar_idle
+
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
     call idt_inicializar
+
     ; Cargar IDT
     lidt [IDT_DESC]
+
     ; Descomentar para testear excepcion divición por cero
     ;mov bx, 0
     ;div bx
+
     ; Configurar controlador de interrupciones
     call resetear_pic
     call habilitar_pic
+
     ; Cargar tarea inicial
+    mov ax, 0x8
+    ltr ax
 
     ; Habilitar interrupciones
+ 	proseguir:
     sti
+
     ; Saltar a la primera tarea: Idle
+    jmp 0x10:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

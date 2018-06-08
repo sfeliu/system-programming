@@ -37,4 +37,8 @@ typedef struct str_gdt_entry {
 extern gdt_entry gdt[];
 extern gdt_descriptor GDT_DESC;
 
+uint32_t prox_i_gdt_libre;
+void inicializar_entrada_gdt();
+uint32_t prox_entrada_libre_gdt();
+
 #endif  /* !__GDT_H__ */

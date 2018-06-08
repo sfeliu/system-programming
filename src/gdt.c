@@ -129,3 +129,15 @@ gdt_descriptor GDT_DESC = {
     sizeof(gdt) - 1,
     (uint32_t) &gdt
 };
+
+void inicializar_entrada_gdt()
+{
+	prox_i_gdt_libre = 3;
+}
+
+uint32_t prox_entrada_libre_gdt()
+{
+	uint32_t temp = prox_i_gdt_libre;
+	prox_i_gdt_libre += 1;
+	return temp;
+}
