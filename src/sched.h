@@ -12,14 +12,32 @@
 #include "screen.h"
 #include "tss.h"
 
-int16_t sched_proximoIndice();
+typedef struct str_tarea {
+	uint16_t indice_tss;
+	uint32_t base_codigo;
+	uint8_t indice;
+	struct str_tarea* siguiente;
+	struct str_tarea* anterior;
+}__attribute__((__packed__)) tarea_t;
 
-uint32_t* lista_prox_tarea_A;
-uint32_t* info_tarea_A;
-uint32_t* lista_prox_tarea_B;
-uint32_t* info_tarea_B;
+typedef struct str_jugador {
+    tarea_t* cazadores;
+    tarea_t* saltadora;
+	uint8_t ultimo_cazador;
+	uint8_t cant_vidas;
+} __attribute__((__packed__)) jugador_t;
 
-uint32_t* tss_tarea_init;
-uint32_t* tss_tarea_idle;
+tarea_t* tss_tarea_init;
+tarea_t* tss_tarea_idle;
+
+uint8_t indice_tarea;
+uint8_t jugador_actual;
+
+jugador_t* jugador_A;
+jugador_t* jugador_B;
+
+void inicializar_sched();
+uint16_t sched_proximoIndice();
+tarea_t proximaTarea();
 
 #endif	/* !__SCHED_H__ */
