@@ -19,6 +19,9 @@ extern tss_inicializar_idle
 extern tss_nueva_tarea
 extern inicializar_entrada_gdt
 extern prox_entrada_libre_gdt
+extern inicializar_sched
+extern game_inicializar
+extern mapa_de_juego
 
 global start
 
@@ -89,7 +92,7 @@ BITS 32
     ; Inicializar pantalla
     mov ax, 0xc0           ; nivel 0 - datos tipo read/write - base 0xB8000 - límite 0xFA0
     mov ds, ax             ; ds: Segmento de datos
-    call black_out_screen
+    call mapa_de_juego
     mov ax, 0xb0           ; nivel 0 - datos tipo read/write
     mov ds, ax             ; ds: Segmento de datos ---- Restauro DS
 
@@ -109,7 +112,6 @@ BITS 32
 	mov cr0, eax
 
     ; Inicializar tss
-	xchg bx, bx
 	push proseguir
 	call tss_inicializar
 
@@ -117,6 +119,9 @@ BITS 32
 	call tss_inicializar_idle
 
     ; Inicializar el scheduler
+	call inicializar_sched
+	xchg bx, bx
+	call game_inicializar
 
     ; Inicializar la IDT
     call idt_inicializar
@@ -139,6 +144,8 @@ BITS 32
     ; Habilitar interrupciones
  	proseguir:
     sti
+
+	; call game_inicializar
 
     ; Saltar a la primera tarea: Idle
     jmp 0x10:0
