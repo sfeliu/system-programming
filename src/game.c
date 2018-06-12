@@ -11,8 +11,8 @@ void game_inicializar() {
 	tarea_t* saltadora_A = (*jugador_A).saltadora;
 	uint32_t* dir_fisica_codigo = NULL; // DEfinir
 	uint32_t indice_tarea = tss_nueva_tarea(0, dir_fisica_codigo);
-	(*saltadora_A).indice_tss = indice_tarea;
-	(*saltadora_A).base_codigo = dir_fisica_codigo;
+	(*saltadora_A).indice_tss = (uint16_t)indice_tarea;
+	(*saltadora_A).base_codigo = (uint32_t)dir_fisica_codigo;
 	(*saltadora_A).indice = 0;
 
 	tarea_t* cazadores_A = (*jugador_A).cazadores;
@@ -26,8 +26,8 @@ void game_inicializar() {
 	tarea_t* saltadora_B = (*jugador_B).saltadora;
 	dir_fisica_codigo = NULL; // DEfinir
 	indice_tarea = tss_nueva_tarea(2, dir_fisica_codigo);
-	(*saltadora_B).indice_tss = indice_tarea;
-	(*saltadora_B).base_codigo = dir_fisica_codigo;
+	(*saltadora_B).indice_tss = (uint16_t)indice_tarea;
+	(*saltadora_B).base_codigo = (uint32_t)dir_fisica_codigo;
 	(*saltadora_B).indice = 0;
 
 	tarea_t* cazadores_B = (*jugador_B).cazadores;
@@ -54,14 +54,14 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 
 
 void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisica_codigo, uint32_t indice_cazador)
-{	
+{
 	tarea_t nueva_tarea = (tarea_t){
-		.indice_tss = indice_tarea;
-		.base_codigo = (uint32_t) dir_fisica_codigo;
-		.indice = indice_cazador;
-	}
-	if(indice == 1)
-	{	
+		.indice_tss = (uint16_t)indice_tarea,
+		.base_codigo = (uint32_t)dir_fisica_codigo,
+		.indice = (uint8_t)indice_cazador,
+	};
+	if(indice_cazador == 1)
+	{
 		(*primero) = nueva_tarea;
 		(*primero).siguiente = primero;
 		(*primero).anterior = primero;
@@ -70,8 +70,8 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 	{
 
 		uint32_t direccion_nueva_tarea = mmu_prox_pag_fisica_libre_kernel();
-		uint8_t* guardarAca = (uint8_t*)direccion_nueva_tarea;
-		
+		tarea_t* guardarAca = (tarea_t*)direccion_nueva_tarea;
+
 		tarea_t* cazador_previo = primero;
 		while((*cazador_previo).indice < indice_cazador-1)
 		{
@@ -80,14 +80,9 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 		nueva_tarea.anterior = cazador_previo;
 		nueva_tarea.siguiente = primero;
 
-		for(int j = 0; j < 4096; j++)
-		{
-			guardarAca[j] = nueva_tarea[j];
-		}
+		*guardarAca = nueva_tarea;
+
 		(*cazador_previo).siguiente = (tarea_t*) guardarAca;
 		(*primero).anterior = (tarea_t*) guardarAca ;
 	}
 }
-
-
-crear_cazador()

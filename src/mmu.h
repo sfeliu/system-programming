@@ -12,7 +12,7 @@
 #include "defines.h"
 #include "i386.h"
 #include "tss.h"
-#include "game.h"
+// #include "game.h"
 
 /* Struct de una entrada de la directory page */
 typedef struct str_directory_entry_t {
