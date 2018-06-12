@@ -81,6 +81,113 @@ void black_out_screen(){
     }}
 }
 
+void mapa_de_juego(){
+    uint8_t character1 = 0x30;                           /* Caracter '0' */
+    uint8_t character2 = 0x41;                           /* Caracter 'A' */
+    uint8_t character3 = 0x76;                           /* Caracter 'v' */
+    uint8_t character4 = 0x69;                           /* Caracter 'i' */
+    uint8_t character5 = 0x64;                           /* Caracter 'd' */
+    uint8_t character6 = 0x61;                           /* Caracter 'a' */
+    uint8_t character7 = 0x73;                           /* Caracter 's' */
+    uint8_t attr1 = (C_BG_BLACK | C_FG_BLACK);           /* Fondo negro y caracter negro */
+    uint8_t attr2 = (C_BG_GREEN | C_FG_GREEN);           /* Fondo verde y caracter verde */
+    uint8_t attr3 = (C_BG_BLACK | C_FG_WHITE);           /* Fondo negro y caracter blanco */
+    uint8_t attr4 = (C_BG_RED | C_FG_RED);           /* Fondo negro y caracter blanco */    
+    uint8_t attr5 = (C_BG_BLUE | C_FG_BLUE);           /* Fondo negro y caracter blanco */    
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) 0x0;
+    uint8_t m = 0;
+    uint8_t n = 0;
+    for (int f = 0; f < VIDEO_FILS; f++) {
+        for (int c = 0; c < VIDEO_COLS; c++) {
+            if(5<=f && f<=36 && ((5<=c && c<=36) || (42<=c && c<=74)) ){
+                p[f][c].c = character1;
+                p[f][c].a = attr2;
+            }else
+            if((44<=f && f<=46) && (34<=c && c<=36)){
+                p[f][c].c = character1;
+                p[f][c].a = attr4;
+            }else
+            if((44<=f && f<=46) && (42<=c && c<=44)){
+                p[f][c].c = character1;
+                p[f][c].a = attr5;
+            }else{
+                p[f][c].c = character1;
+                p[f][c].a = attr1;
+            }
+        }
+    }
+    for(int c=15; c<=24;c++){      //tareas
+        if((c%2) == 1){
+            p[44][c].c = character1 + m;
+            p[44][c].a = attr3;
+            p[44][c+37].c = character1 + m;
+            p[44][c+37].a = attr3;
+            m++;
+        }else{
+            p[44][c+1].c = character1;
+            p[44][c+1].a = attr1;
+            p[44][c+38].c = character1;
+            p[44][c+38].a = attr1;
+        }
+    }
+    m = 0;
+    for (int f = 5; f < 37; f++) {
+        if(f<=14 || (f>=21 && f<= 30)){
+            p[f][3].c = character1 + m;
+            p[f][3].a = attr3;
+            p[f][40].c = character1 + m;
+            p[f][40].a = attr3;
+            m++;
+            if(f == 14 || f == 30){m=0;}
+        }else{
+            p[f][3].c = character2 + m;
+            p[f][3].a = attr3;
+            p[f][40].c = character2 + m;
+            p[f][40].a = attr3;
+            m++;
+            if(f == 20){m=0;}
+        }
+    }
+    for (int c = 5; c < 37; c++) {
+        if(c<=14 || (c>=21 && c<=30)){
+            p[3][c].c = character1 + n;
+            p[3][c].a = attr3;
+            p[3][c+38].c = character1 + n;
+            p[3][c+38].a = attr3;
+            n++;
+            if(c == 14 || c == 30){n=0;}
+        }else{
+            p[3][c].c = character2 + n;
+            p[3][c].a = attr3;
+            p[3][c+38].c = character2 + n;
+            p[3][c+38].a = attr3;
+            n++;
+            if(c == 20){n=0;}
+        } 
+    }
+    p[42][33].c = character3;
+    p[42][33].a = attr3;
+    p[42][33+8].c = character3;
+    p[42][33+8].a = attr3;
+    p[42][34].c = character4;
+    p[42][34].a = attr3;
+    p[42][34+8].c = character4;
+    p[42][34+8].a = attr3;
+    p[42][35].c = character5;
+    p[42][35].a = attr3;
+    p[42][35+8].c = character5;
+    p[42][35+8].a = attr3;
+    p[42][36].c = character6;
+    p[42][36].a = attr3;
+    p[42][36+8].c = character6;
+    p[42][36+8].a = attr3;
+    p[42][37].c = character7;
+    p[42][37].a = attr3;
+    p[42][37+8].c = character7;
+    p[42][37+8].a = attr3;
+
+}
+
 void imprimirTecla(uint8_t scanCode){
     uint16_t attr = 0x0F;
     if(scanCode == 0x2) print((uint8_t*) "1", 79, 0, attr);
