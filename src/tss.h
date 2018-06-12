@@ -61,6 +61,6 @@ extern tss tss_idle;
 void tss_inicializar(uint32_t);
 void tss_inicializar_idle();
 
-void tss_nueva_tarea(uint32_t);
+uint32_t tss_nueva_tarea(uint32_t, uint32_t*);
 
 #endif  /* !__TSS_H__ */

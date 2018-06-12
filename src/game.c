@@ -8,14 +8,14 @@
 
 
 void game_inicializar() {
-	tarea_t* saltadora_A = jugador_A.saltadora;
+	tarea_t* saltadora_A = (*jugador_A).saltadora;
 	uint32_t* dir_fisica_codigo = NULL; // DEfinir
 	uint32_t indice_tarea = tss_nueva_tarea(0, dir_fisica_codigo);
-	saltadora_A.indice_tss = indice_tarea;
-	saltadora_A.base_codigo = dir_fisica_codigo;
-	saltadora_A.indice = 0;
+	(*saltadora_A).indice_tss = indice_tarea;
+	(*saltadora_A).base_codigo = dir_fisica_codigo;
+	(*saltadora_A).indice = 0;
 
-	tarea_t* cazadores_A = jugador_A.cazadores;
+	tarea_t* cazadores_A = (*jugador_A).cazadores;
 	for(int i = 1; i < 5; i++)
 	{
 		dir_fisica_codigo = NULL; // DEfinir
@@ -23,14 +23,14 @@ void game_inicializar() {
 		agregar_cazador(cazadores_A, indice_tarea, dir_fisica_codigo, i);
 	}
 
-	tarea_t* saltadora_B = jugador_B.saltadora;
+	tarea_t* saltadora_B = (*jugador_B).saltadora;
 	dir_fisica_codigo = NULL; // DEfinir
 	indice_tarea = tss_nueva_tarea(2, dir_fisica_codigo);
-	saltadora_B.indice_tss = indice_tarea;
-	saltadora_B.base_codigo = dir_fisica_codigo;
-	saltadora_B.indice = 0;
+	(*saltadora_B).indice_tss = indice_tarea;
+	(*saltadora_B).base_codigo = dir_fisica_codigo;
+	(*saltadora_B).indice = 0;
 
-	tarea_t* cazadores_B = jugador_B.cazadores;
+	tarea_t* cazadores_B = (*jugador_B).cazadores;
 	for(int i = 1; i < 5; i++)
 	{
 		dir_fisica_codigo = NULL; // DEfinir
@@ -85,7 +85,7 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 			guardarAca[j] = nueva_tarea[j];
 		}
 		(*cazador_previo).siguiente = (tarea_t*) guardarAca;
-		(*primero).anterior = (tarea_t*) guardarAca;
+		(*primero).anterior = (tarea_t*) guardarAca ;
 	}
 }
 

@@ -45,7 +45,7 @@ void tss_inicializar_idle()
 	gdt[GDT_IDX_IDLE_TASK].p = 1;
 }
 
-void tss_nueva_tarea(uint32_t tipo)
+uint32_t tss_nueva_tarea(uint32_t tipo, uint32_t* dir_fisica_codigo)
 {
 	uint32_t inicio_tarea;
 
@@ -67,13 +67,14 @@ void tss_nueva_tarea(uint32_t tipo)
 	}
 
 	uint32_t dir = mmu_inicializar_dir_tarea((uint8_t*)inicio_tarea);
+	dir_fisica_codigo = (uint32_t*) inicio_tarea; // inicio tarea es un puntero a la memoria fisica del nuevo codigo
 	uint32_t posicion_tss = mmu_prox_pag_fisica_libre_kernel();
 
 	tss* tss_tarea = (tss*)posicion_tss;
 
 	*tss_tarea = (tss)
 	{
-		.esp0 = mmu_prox_pag_fisica_libre_kernel(),
+		.esp0 = mmu_prox_pag_fisica_libre_kernel() + 4096,
 		.ss0 = 0xb0,
 		.cr3 = dir,
 		.eflags = 0x202,
@@ -99,4 +100,5 @@ void tss_nueva_tarea(uint32_t tipo)
 	gdt[indice_tarea].type = 0x9;
 	gdt[indice_tarea].dpl = 0x3;
 	gdt[indice_tarea].db = 0x1;
+	return indice_tarea;
 }
