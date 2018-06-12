@@ -71,6 +71,7 @@ uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo)
 	{
 		guardarAca[j] = codigo[j];
 	}
+	codigo = guardarAca; // puntero a codigo modificado para poder tener la nuva base del codigo.	
 	return (uint32_t)tarea_page_directory;
 }
 

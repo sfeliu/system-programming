@@ -121,6 +121,13 @@ _isr32:
     ;xchg bx, bx
     
     call proximoReloj
+    ;call sched_proximoIndice
+    ;str cx
+    ;cmp ax, cx
+    ;je .fin
+
+    ;    mov [selector], ax
+    ;    jmp nueva_tarea:0
     iret
 ;;
 ;; Rutina de atención del TECLADO
