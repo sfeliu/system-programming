@@ -119,11 +119,12 @@ BITS 32
 	call tss_inicializar_idle
 
     ; Inicializar el scheduler
+    call inicializar_entrada_gdt
 	call inicializar_sched
-	xchg bx, bx
-	call game_inicializar
+    call game_inicializar
 
     ; Inicializar la IDT
+	xchg bx, bx
     call idt_inicializar
 
     ; Cargar IDT

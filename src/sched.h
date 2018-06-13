@@ -21,7 +21,7 @@ typedef struct str_tarea {
 }__attribute__((__packed__)) tarea_t;
 
 typedef struct str_jugador {
-    tarea_t* cazadores;
+    tarea_t* cazadores;		//tarea_t tareas[5];
     tarea_t* saltadora;
 	uint8_t ultimo_cazador;
 	uint8_t cant_vidas;

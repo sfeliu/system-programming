@@ -22,5 +22,6 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato);
 uint32_t game_leer(uint32_t direccion, uint32_t* dato);
 
 void agregar_cazador(tarea_t*, uint32_t, uint32_t*, uint32_t);
+tarea_t* inicializar_tarea_t();
 
 #endif  /* !__GAME_H__ */

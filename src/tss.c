@@ -6,6 +6,7 @@
 */
 
 #include "tss.h"
+#include "screen.h"
 
 tss tss_inicial;
 tss tss_idle;
@@ -66,10 +67,9 @@ uint32_t tss_nueva_tarea(uint32_t tipo, uint32_t* dir_fisica_codigo)
 		inicio_tarea = 0x13000;
 	}
 
-	uint32_t dir = mmu_inicializar_dir_tarea((uint8_t*)inicio_tarea);
-	dir_fisica_codigo = (uint32_t*) inicio_tarea; // inicio tarea es un puntero a la memoria fisica del nuevo codigo
-	uint32_t posicion_tss = mmu_prox_pag_fisica_libre_kernel();
+	uint32_t dir = mmu_inicializar_dir_tarea((uint8_t*)inicio_tarea, dir_fisica_codigo);
 
+	uint32_t posicion_tss = mmu_prox_pag_fisica_libre_kernel();
 	tss* tss_tarea = (tss*)posicion_tss;
 
 	*tss_tarea = (tss)

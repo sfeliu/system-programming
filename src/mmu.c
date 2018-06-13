@@ -6,7 +6,6 @@
 */
 
 #include "mmu.h"
-#include "screen.h"
 
 void mmu_inicializar()
 {
@@ -56,7 +55,7 @@ void mmu_inicializar_dir_kernel()
 	};
 }
 
-uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo)
+uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo, uint32_t* dir_fisica_codigo)
 {
 	directory_entry_t* tarea_page_directory = (directory_entry_t*) mmu_prox_pag_fisica_libre_kernel();
 	uint8_t rw = 1;
@@ -72,7 +71,8 @@ uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo)
 	{
 		guardarAca[j] = codigo[j];
 	}
-	codigo = guardarAca; // puntero a codigo modificado para poder tener la nuva base del codigo.
+	*dir_fisica_codigo = prox_pag_fisica; // puntero a codigo modificado para poder tener la nueva base del codigo.	
+
 	return (uint32_t)tarea_page_directory;
 }
 
