@@ -7,6 +7,9 @@
 %include "imprimir.mac"
 extern print
 extern imprimirTecla
+extern game_numero
+extern game_escribir
+extern game_leer
 
 BITS 32
 
@@ -121,13 +124,20 @@ _isr32:
     ;xchg bx, bx
     
     call proximoReloj
-    ;call sched_proximoIndice
-    ;str cx
-    ;cmp ax, cx
-    ;je .fin
+    call sched_proximoIndice
+    
+    str cx
+    cmp ax, cx
+    je .fin
 
-    ;    mov [selector], ax
-    ;    jmp nueva_tarea:0
+    shl ax, 3
+    or ax, 0x03
+
+        ;mov [selector], ax
+        ;ltr ax
+        ;jmp far eax
+
+    .fin:
     iret
 ;;
 ;; Rutina de atención del TECLADO
@@ -145,9 +155,31 @@ global _isr66
 _isr66:
     pushad
     call fin_intr_pic1
-    popad
-    mov eax, 0x42
-    iret
+
+    cmp eax, 0x542
+    je .Numero
+    cmp eax, 0x824
+    je .Escribir
+
+    ;Leer:
+    push ebx
+    push ecx
+    call game_leer
+    jmp .fin
+
+    .Numero:
+        call game_numero
+        jmp .fin
+
+    .Escribir:
+        push ebx
+        push ecx
+        call game_escribir
+        jmp .fin
+    .fin:
+        popad
+        ;mov eax, 0x42
+        iret
 
 
 %define sysNumero   0x542
