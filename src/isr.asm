@@ -10,6 +10,7 @@ extern imprimirTecla
 extern game_numero
 extern game_escribir
 extern game_leer
+extern mantenimiento_scheduler
 
 BITS 32
 
@@ -70,6 +71,11 @@ _isr%1:
     push 0xF
     push msg_int_%1
     call print
+    
+    ;xchg bx, bx
+    call mantenimiento_scheduler
+    jmp 0x10:0
+
     jmp $
 
 %endmacro
@@ -121,11 +127,10 @@ ISR 31
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
-    ;xchg bx, bx
-    
     call proximoReloj
+    pushad
     call sched_proximoIndice
-    
+
     str cx
     cmp ax, cx
     je .fin
@@ -135,9 +140,12 @@ _isr32:
 
         ;mov [selector], ax
         ;ltr ax
-        ;jmp far eax
+        mov bx, ax
+        ;xchg bx, bx
+        ;jmp bx
 
     .fin:
+    popad
     iret
 ;;
 ;; Rutina de atención del TECLADO

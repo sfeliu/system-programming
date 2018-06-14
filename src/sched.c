@@ -6,6 +6,8 @@
 */
 
 #include "sched.h"
+#define LS_INLINE static __inline __attribute__((always_inline))
+
 
 void inicializar_sched()
 {
@@ -15,6 +17,8 @@ void inicializar_sched()
 
 uint16_t sched_proximoIndice()
 {
+	//__asm __volatile("call fin_intr_pic1");
+
 	if(jugador_actual == 0)
 	{
 		jugador_actual = 1;
@@ -52,11 +56,17 @@ tarea_t proximaTarea(jugador_t jugador)
 {
 	uint8_t indice_anterior = jugador.ultimo_cazador;
 	tarea_t* tarea_actual = jugador.cazadores;
-
-	while((*tarea_actual).indice < indice_anterior)
-	{
-		tarea_actual = (*tarea_actual).siguiente;
-	}
+	
+	while((*tarea_actual).indice != indice_anterior){
+			tarea_actual = (*tarea_actual).siguiente;
+		}
+	tarea_actual = (*tarea_actual).siguiente;
+	
+	/*while((*tarea_actual).indice < indice_anterior)
+		{
+			tarea_actual = (*tarea_actual).siguiente;
+		}*/
 
 	return *tarea_actual;
 }
+

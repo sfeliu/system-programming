@@ -14,6 +14,9 @@
 #include "sched.h"
 
 void game_inicializar();
+void mantenimiento_scheduler();
+void resetear_juego();
+
 
 uint32_t game_numero();
 
