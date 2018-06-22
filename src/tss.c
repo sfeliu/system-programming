@@ -92,9 +92,9 @@ uint32_t tss_nueva_tarea(uint32_t tipo, uint32_t* dir_fisica_codigo)
 
 	uint32_t indice_tarea = prox_entrada_libre_gdt();
 
-	gdt[indice_tarea].base_0_15 = (uint32_t) &tss_tarea;
-	gdt[indice_tarea].base_23_16 = (uint32_t) &tss_tarea >> 16;
-	gdt[indice_tarea].base_31_24 = (uint32_t) &tss_tarea >> 24;
+	gdt[indice_tarea].base_0_15 = (uint32_t) tss_tarea;
+	gdt[indice_tarea].base_23_16 = (uint32_t) tss_tarea >> 16;
+	gdt[indice_tarea].base_31_24 = (uint32_t) tss_tarea >> 24;
 	gdt[indice_tarea].p = 1;
 	gdt[indice_tarea].limit_0_15 = 0x67;
 	gdt[indice_tarea].type = 0x9;

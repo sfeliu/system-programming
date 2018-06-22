@@ -32,32 +32,40 @@ idt_descriptor IDT_DESC = {
     }
 */
 
-
-#define IDT_ENTRY(numero)                                                                          \
+// DPL 0 puerta de interrupcion.
+#define IDT_ENTRY_HARDWARE(numero)                                                                 \
     idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
     idt[numero].segsel = (uint16_t) 0xA0;                                                          \
     idt[numero].attr = (uint16_t) 0x8E00;                                                          \
     idt[numero].offset_16_31 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 
 
+// DPL 3 y puerta de excepcion.
+#define IDT_ENTRY_SOFTWARE(numero)                                                                 \
+    idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
+    idt[numero].segsel = (uint16_t) 0xA0;                                                          \
+    idt[numero].attr = (uint16_t) 0xEF00;                                                          \
+    idt[numero].offset_16_31 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
+
+
 
 void idt_inicializar() {
     // Excepciones
-    IDT_ENTRY(0);
-    IDT_ENTRY(1);
-    IDT_ENTRY(2);
-    IDT_ENTRY(3);
-    IDT_ENTRY(4);
-    IDT_ENTRY(5);
-    IDT_ENTRY(6);
-    IDT_ENTRY(7);
-    IDT_ENTRY(8);
-    IDT_ENTRY(9);
-    IDT_ENTRY(10);
-    IDT_ENTRY(11);
-    IDT_ENTRY(12);
-    IDT_ENTRY(13);
-    IDT_ENTRY(32);
-    IDT_ENTRY(33);
-    IDT_ENTRY(66);
+    IDT_ENTRY_HARDWARE(0);
+    IDT_ENTRY_HARDWARE(1);
+    IDT_ENTRY_HARDWARE(2);
+    IDT_ENTRY_HARDWARE(3);
+    IDT_ENTRY_HARDWARE(4);
+    IDT_ENTRY_HARDWARE(5);
+    IDT_ENTRY_HARDWARE(6);
+    IDT_ENTRY_HARDWARE(7);
+    IDT_ENTRY_HARDWARE(8);
+    IDT_ENTRY_HARDWARE(9);
+    IDT_ENTRY_HARDWARE(10);
+    IDT_ENTRY_HARDWARE(11);
+    IDT_ENTRY_HARDWARE(12);
+    IDT_ENTRY_HARDWARE(13);
+    IDT_ENTRY_HARDWARE(32);
+    IDT_ENTRY_HARDWARE(33);
+    IDT_ENTRY_SOFTWARE(66);
 }

@@ -124,7 +124,7 @@ BITS 32
     call game_inicializar
 
     ; Inicializar la IDT
-	xchg bx, bx
+	;xchg bx, bx
     call idt_inicializar
 
     ; Cargar IDT

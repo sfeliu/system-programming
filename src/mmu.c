@@ -58,9 +58,29 @@ void mmu_inicializar_dir_kernel()
 uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo, uint32_t* dir_fisica_codigo)
 {
 	directory_entry_t* tarea_page_directory = (directory_entry_t*) mmu_prox_pag_fisica_libre_kernel();
-	uint8_t rw = 1;
-	uint8_t us = 0;
 
+	int j = 0;
+	for(int i = 0; i < 1024; i++)
+	{
+		tarea_page_directory[i].p = 0;
+	}
+
+	tarea_page_directory[j] = (directory_entry_t)
+	{
+		.p = 1,
+		.rw = 1,
+		.us = 0,
+		.pwt = 0,
+		.pcd = 0,
+		.a = 0,
+		.ignored1 = 0,
+		.ps = 0,
+		.ignored4 = 0,
+		.dir_table = 0x28 			//page table identity mapping kernel.
+	};
+
+	uint8_t rw = 1;
+	uint8_t us = 1;
 	uint32_t prox_pag_fisica = mmu_prox_pag_fisica_libre_kernel();
 	mmu_mapearPagina((uint32_t)(0x8000000), (uint32_t)tarea_page_directory, prox_pag_fisica, rw, rw, us, us);
 

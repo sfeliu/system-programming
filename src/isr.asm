@@ -72,8 +72,8 @@ _isr%1:
     push msg_int_%1
     call print
     
-    ;xchg bx, bx
     call mantenimiento_scheduler
+    xchg bx, bx
     jmp 0x10:0
 
     jmp $
@@ -129,6 +129,7 @@ global _isr32
 _isr32:
     call proximoReloj
     pushad
+    xchg bx, bx
     call sched_proximoIndice
 
     str cx
@@ -136,13 +137,12 @@ _isr32:
     je .fin
 
     shl ax, 3
-    or ax, 0x03
+    ;or ax, 0x03
 
         ;mov [selector], ax
         ;ltr ax
-        mov bx, ax
-        ;xchg bx, bx
-        ;jmp bx
+        mov [sched_tarea_selector], ax
+        jmp far [sched_tarea_offset]
 
     .fin:
     popad
@@ -152,7 +152,6 @@ _isr32:
 ;; -------------------------------------------------------------------------- ;;
 global _isr33
 _isr33:
-    ;xchg bx, bx
     
     call escribirTecla
     iret
@@ -162,7 +161,9 @@ _isr33:
 global _isr66
 _isr66:
     pushad
-    call fin_intr_pic1
+    xchg bx, bx
+    call fin_intr_pic1    
+
 
     cmp eax, 0x542
     je .Numero
