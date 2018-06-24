@@ -35,11 +35,11 @@ void game_inicializar() {
 	dir_fisica_codigo = NULL; // DEfinir
 	indice_tarea = tss_nueva_tarea(2, dir_fisica_codigo);
 	(*saltadora_B).indice_tss = (uint16_t)indice_tarea;
-	(*saltadora_B).base_codigo = *dir_fisica_codigo;
+	(*saltadora_B).base_codigo = (uint32_t)dir_fisica_codigo;
 	(*saltadora_B).indice = 0;
 	(*jugador_B).saltadora = saltadora_B;
 
-	tarea_t* cazadores_B = (*jugador_B).cazadores;
+	tarea_t* cazadores_B = inicializar_tarea_t();
 	for(int i = 1; i < 5; i++)
 	{
 		dir_fisica_codigo = NULL; // DEfinir
@@ -67,14 +67,14 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
    	//uint32_t offset_2 = (direccion/4)/32;
 
 	if(jugador_actual == 0){
-		*((uint32_t*)(((*((*jugador_B).saltadora)).base_codigo)+direccion)) = *dato;
+		//*((uint32_t*)(((*((*jugador_B).saltadora)).base_codigo)+direccion)) = *dato;
 		//uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
 	    //uint32_t cInit = offset_B+(direccion/4) + (47*offset_2);
 	    //uint32_t fSize = offset_B+(direccion/4) + (47*offset_2);
 	   	//uint32_t cSize = offset_B+(direccion/4) + (47*offset_2);
 		//screen_drawBox(fInit, cInit, fSize, cSize, attr2, character1);
 	}else{
-		*((uint32_t*)(((*((*jugador_A).saltadora)).base_codigo)+direccion)) = *dato;
+		//*((uint32_t*)(((*((*jugador_A).saltadora)).base_codigo)+direccion)) = *dato;
 		//uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
 	    //uint32_t cInit = offset_A+(direccion/4) + (47*offset_2);
 	    //uint32_t fSize = offset_A+(direccion/4) + (47*offset_2);
@@ -93,14 +93,14 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
     //uint32_t offset_2 = (direccion/4)/32;
 
 	if(jugador_actual == 0){
-		*dato = *((uint32_t*)(((*((*jugador_B).saltadora)).base_codigo)+direccion));
+		//*dato = *((uint32_t*)(((*((*jugador_B).saltadora)).base_codigo)+direccion));
 		//uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
 	    //uint32_t cInit = offset_B+(direccion/4) + (47*offset_2);
 	    //uint32_t fSize = offset_B+(direccion/4) + (47*offset_2);
 	   	//uint32_t cSize = offset_B+(direccion/4) + (47*offset_2);
 		//screen_drawBox(fInit, cInit, fSize, cSize, attr2, character1);
 	}else{
-		*dato = *((uint32_t*)(((*((*jugador_A).saltadora)).base_codigo)+direccion));
+		//*dato = *((uint32_t*)(((*((*jugador_A).saltadora)).base_codigo)+direccion));
 		//uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
 	    //uint32_t cInit = offset_A+(direccion/4) + (47*offset_2);
 	    //uint32_t fSize = offset_A+(direccion/4) + (47*offset_2);

@@ -72,9 +72,9 @@ _isr%1:
     push msg_int_%1
     call print
     
-    call mantenimiento_scheduler
-    xchg bx, bx
-    jmp 0x10:0
+    ;call mantenimiento_scheduler
+    ;xchg bx, bx
+    ;jmp 0x10:0
 
     jmp $
 

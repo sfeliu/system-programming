@@ -80,17 +80,24 @@ uint32_t mmu_inicializar_dir_tarea(uint8_t* codigo, uint32_t* dir_fisica_codigo)
 	};
 
 	uint8_t rw = 1;
-	uint8_t us = 1;
-	uint32_t prox_pag_fisica = mmu_prox_pag_fisica_libre_kernel();
-	mmu_mapearPagina((uint32_t)(0x8000000), (uint32_t)tarea_page_directory, prox_pag_fisica, rw, rw, us, us);
+	uint8_t us = 0;
+	uint32_t prox_pag_fisica = mmu_prox_pag_fisica_libre_tarea();
+	mmu_mapearPagina(0x400000, (uint32_t)kernel_page_directory, prox_pag_fisica, rw, rw, us, us);
+
 
 	if(codigo == 0) return (uint32_t)tarea_page_directory;
-
-	uint8_t* guardarAca = (uint8_t*)prox_pag_fisica;
-	for(int j = 0; j < 4096; j++)
+	uint32_t* guardarAca = (uint32_t*)0x400000;
+	for(int j = 0; j < 1024; j++)
 	{
-		guardarAca[j] = codigo[j];
+		guardarAca[j] = ((uint32_t*)codigo)[j];
 	}
+
+	mmu_unmapearPagina((uint32_t)(0x400000), (uint32_t)kernel_page_directory);
+
+	us = 1;
+	mmu_mapearPagina((uint32_t)(0x8000000), (uint32_t)tarea_page_directory, prox_pag_fisica, rw, rw, us, us);
+
+
 	*dir_fisica_codigo = prox_pag_fisica; // puntero a codigo modificado para poder tener la nueva base del codigo.	
 
 	return (uint32_t)tarea_page_directory;
