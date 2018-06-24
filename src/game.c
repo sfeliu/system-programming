@@ -60,10 +60,14 @@ void game_inicializar() {
 
 uint32_t game_numero() {
 	uint32_t temp = (uint32_t)indice_tarea;
+	print_hex(temp, 8, 2, k, 0xf);
+	k++;
     return temp;
 }
 
 uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
+	print_hex(direccion, 8, 2, k, 0xf);
+	k++;
 	uint8_t attr1 = (C_BG_RED | C_FG_RED);           /* Fondo negro y caracter blanco */    
     uint8_t attr2 = (C_BG_BLUE | C_FG_BLUE);           /* Fondo negro y caracter blanco */    
 	uint8_t character1 = 0x30;                           /* Caracter '0' */
@@ -71,15 +75,27 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
     uint32_t offset_B = 442;
    	uint32_t offset_2 = (direccion/4)/32;
 
+   	uint32_t cr3_var = rcr3(); 
+   	cr3_var = (cr3_var >> 12)<<12;
+   	
+
 	if(jugador_actual == 0){
-		*((uint32_t*)(((*((*jugador_B).saltadora)).base_codigo)+direccion)) = *dato;
+		uint32_t dir_fisica = (*((*jugador_B).saltadora)).base_codigo;
+		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
+
+		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		mmu_unmapearPagina(dir_fisica, cr3_var);
 		uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
 	    uint32_t cInit = offset_B+(direccion/4) + (47*offset_2);
 	    uint32_t fSize = offset_B+(direccion/4) + (47*offset_2);
 	   	uint32_t cSize = offset_B+(direccion/4) + (47*offset_2);
 		screen_drawBox(fInit, cInit, fSize, cSize, attr2, character1);
 	}else{
-		*((uint32_t*)(((*((*jugador_A).saltadora)).base_codigo)+direccion)) = *dato;
+		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
+		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
+
+		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		mmu_unmapearPagina(dir_fisica, cr3_var);
 		uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
 	    uint32_t cInit = offset_A+(direccion/4) + (47*offset_2);
 	    uint32_t fSize = offset_A+(direccion/4) + (47*offset_2);
@@ -90,6 +106,8 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
 }
 
 uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
+	print_hex(direccion, 8, 2, k, 0xf);
+	k++;
 	uint8_t character1 = 0x30;                           /* Caracter '0' */
 	uint8_t attr1 = (C_BG_RED | C_FG_RED);           /* Fondo negro y caracter blanco */    
     uint8_t attr2 = (C_BG_BLUE | C_FG_BLUE);           /* Fondo negro y caracter blanco */    
@@ -97,16 +115,25 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
     uint32_t offset_B = 442;
     uint32_t offset_2 = (direccion/4)/32;
 
+    uint32_t cr3_var = rcr3(); 
+   	cr3_var = (cr3_var >> 12)<<12;
+
 	if(jugador_actual == 0){
-		*dato = *((uint32_t*)(((*((*jugador_B).saltadora)).base_codigo)+direccion));
-		uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
+		uint32_t dir_fisica = (*((*jugador_B).saltadora)).base_codigo;
+		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
+
+		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		mmu_unmapearPagina(dir_fisica, cr3_var);		uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
 	    uint32_t cInit = offset_B+(direccion/4) + (47*offset_2);
 	    uint32_t fSize = offset_B+(direccion/4) + (47*offset_2);
 	   	uint32_t cSize = offset_B+(direccion/4) + (47*offset_2);
 		screen_drawBox(fInit, cInit, fSize, cSize, attr2, character1);
 	}else{
-		*dato = *((uint32_t*)(((*((*jugador_A).saltadora)).base_codigo)+direccion));
-		uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
+		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
+		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
+
+		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		mmu_unmapearPagina(dir_fisica, cr3_var);		uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
 	    uint32_t cInit = offset_A+(direccion/4) + (47*offset_2);
 	    uint32_t fSize = offset_A+(direccion/4) + (47*offset_2);
 	   	uint32_t cSize = offset_A+(direccion/4) + (47*offset_2);
