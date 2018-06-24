@@ -54,19 +54,19 @@ uint16_t sched_proximoIndice()
 
 tarea_t proximaTarea(jugador_t jugador)
 {
-	uint8_t indice_anterior = jugador.ultimo_cazador;
-	tarea_t* tarea_actual = jugador.cazadores;
+	tarea_t* cazador_anterior = jugador.ultimo_cazador;
+	/*tarea_t* tarea_actual = jugador.cazadores;
 	
 	while((*tarea_actual).indice != indice_anterior){
 			tarea_actual = (*tarea_actual).siguiente;
 		}
 	tarea_actual = (*tarea_actual).siguiente;
 	
-	/*while((*tarea_actual).indice < indice_anterior)
+	while((*tarea_actual).indice < indice_anterior)
 		{
 			tarea_actual = (*tarea_actual).siguiente;
 		}*/
 
-	return *tarea_actual;
+	return *((*cazador_anterior).siguiente);
 }
 

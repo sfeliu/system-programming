@@ -29,7 +29,7 @@ void game_inicializar() {
 	}
 	(*jugador_A).cazadores = cazadores_A;
 	(*jugador_A).cant_vidas = 5;
-	(*jugador_A).ultimo_cazador = 1;
+	(*jugador_A).ultimo_cazador = cazadores_A; // Modificación: ultimo cazador es puntero a tarea.
 
 	tarea_t* saltadora_B = inicializar_tarea_t();
 	dir_fisica_codigo = NULL; // DEfinir
@@ -48,7 +48,7 @@ void game_inicializar() {
 	}
 	(*jugador_B).cazadores = cazadores_B; //cambio pablo
 	(*jugador_B).cant_vidas = 5; //agrego pablo
-	(*jugador_B).ultimo_cazador = 1; // agrego pablo
+	(*jugador_B).ultimo_cazador = cazadores_B; // Modificación: ultimo cazador es puntero a tarea.
 
 
 }
@@ -130,15 +130,13 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 		uint32_t direccion_nueva_tarea = mmu_prox_pag_fisica_libre_kernel();
 		tarea_t* guardarAca = (tarea_t*)direccion_nueva_tarea;
 
-		tarea_t* cazador_previo = primero;
-		while((*cazador_previo).indice < indice_cazador-1)
-		{
-			cazador_previo = (*cazador_previo).siguiente;
-		}
-		nueva_tarea.anterior = cazador_previo;
+		
+		nueva_tarea.anterior = (*primero).anterior;
 		nueva_tarea.siguiente = primero;
 
-
+		(*guardarAca) = nueva_tarea;                                                         
+		
+		tarea_t* cazador_previo = (*primero).anterior;
 		(*cazador_previo).siguiente = (tarea_t*) guardarAca;
 		(*primero).anterior = (tarea_t*) guardarAca ;
 	}
@@ -173,7 +171,7 @@ void mantenimiento_scheduler(){
 
 				//mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
 				//mmu_unmapearPagina((*tarea_actual).base_codigo);
-				(*jugador_A).ultimo_cazador = (*tarea_anterior).indice;
+				//(*jugador_A).ultimo_cazador = (*tarea_anterior).indice;
 			
 		}
 	}else{
@@ -197,7 +195,7 @@ void mantenimiento_scheduler(){
 
 				//mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
 				//mmu_unmapearPagina((*tarea_actual).base_codigo);
-				(*jugador_B).ultimo_cazador = (*tarea_anterior).indice;
+				//(*jugador_B).ultimo_cazador = (*tarea_anterior).indice;
 				(*jugador_B).cant_vidas = ((*jugador_B).cant_vidas) - 1;
 		}
 	}
