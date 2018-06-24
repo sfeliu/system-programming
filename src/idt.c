@@ -44,7 +44,7 @@ idt_descriptor IDT_DESC = {
 #define IDT_ENTRY_SOFTWARE(numero)                                                                 \
     idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
     idt[numero].segsel = (uint16_t) 0xA0;                                                          \
-    idt[numero].attr = (uint16_t) 0xEF00;                                                          \
+    idt[numero].attr = (uint16_t) 0xEE00;                                                          \
     idt[numero].offset_16_31 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 
 
@@ -65,7 +65,26 @@ void idt_inicializar() {
     IDT_ENTRY_HARDWARE(11);
     IDT_ENTRY_HARDWARE(12);
     IDT_ENTRY_HARDWARE(13);
+    IDT_ENTRY_HARDWARE(14);
+    IDT_ENTRY_HARDWARE(15);
+    IDT_ENTRY_HARDWARE(16);
+    IDT_ENTRY_HARDWARE(17);
+    IDT_ENTRY_HARDWARE(18);
+    IDT_ENTRY_HARDWARE(19);
+    IDT_ENTRY_HARDWARE(20);
+    IDT_ENTRY_HARDWARE(21);
+    IDT_ENTRY_HARDWARE(22);
+    IDT_ENTRY_HARDWARE(23);
+    IDT_ENTRY_HARDWARE(24);
+    IDT_ENTRY_HARDWARE(25);
+    IDT_ENTRY_HARDWARE(26);
+    IDT_ENTRY_HARDWARE(27);
+    IDT_ENTRY_HARDWARE(28);
+    IDT_ENTRY_HARDWARE(29);
+    IDT_ENTRY_HARDWARE(30);
+    IDT_ENTRY_HARDWARE(31);
+
     IDT_ENTRY_HARDWARE(32);
     IDT_ENTRY_HARDWARE(33);
-    IDT_ENTRY_SOFTWARE(66);
+    IDT_ENTRY_SOFTWARE(102);
 }

@@ -10,6 +10,7 @@
 
 #include "stdint.h"
 #include "screen.h"
+#include "mmu.h"
 #include "tss.h"
 
 typedef struct str_tarea {
@@ -36,8 +37,13 @@ uint8_t jugador_actual;
 jugador_t* jugador_A;
 jugador_t* jugador_B;
 
+int w;
+int k;
+
+void inic_w_k();
+
 void inicializar_sched();
 uint16_t sched_proximoIndice();
-tarea_t proximaTarea();
+tarea_t proximaTarea(jugador_t*);
 
 #endif	/* !__SCHED_H__ */

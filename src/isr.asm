@@ -72,9 +72,9 @@ _isr%1:
     push msg_int_%1
     call print
     
-    ;call mantenimiento_scheduler
+    call mantenimiento_scheduler
     ;xchg bx, bx
-    ;jmp 0x10:0
+    jmp 0x10:0
 
     jmp $
 
@@ -158,12 +158,11 @@ _isr33:
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
-global _isr66
-_isr66:
+global _isr102
+_isr102:
     pushad
     xchg bx, bx
-    call fin_intr_pic1    
-
+    ;call fin_intr_pic1    
 
     cmp eax, 0x542
     je .Numero
