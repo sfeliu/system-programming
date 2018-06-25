@@ -29,7 +29,7 @@ void print_hex(uint32_t numero, int size, uint32_t x, uint32_t y, uint16_t attr)
 void screen_drawBox(uint32_t fInit, uint32_t cInit,
                     uint32_t fSize, uint32_t cSize,
                     uint8_t character, uint8_t attr );
-
+void murio_cazadora(uint8_t indice_tarea, uint8_t jugador);
 void black_out_screen();
 void mapa_de_juego();
 void imprimirTecla(uint8_t scanCode);

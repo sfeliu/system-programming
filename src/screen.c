@@ -53,6 +53,23 @@ void print_hex(uint32_t numero, int32_t size, uint32_t x, uint32_t y, uint16_t a
     }
 }
 
+void murio_cazadora(uint8_t indice_tarea, uint8_t jugador){
+    uint8_t character1 = 0x78;                           /* Caracter '0' */
+    uint8_t attr = (C_BG_BLACK | C_FG_RED);           /* Fondo negro y caracter blanco */
+    uint32_t offset_jugador_A = 0;
+    uint32_t offset_jugador_B =37 ;
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO;
+    indice_tarea = ((uint32_t)indice_tarea)*2;
+    if(jugador == 1){
+        p[46][15+(indice_tarea) + offset_jugador_B].c = character1;
+        p[46][15+(indice_tarea) + offset_jugador_B].a = attr;
+
+    }else{
+        p[46][15+(indice_tarea) + offset_jugador_A].c = character1;
+        p[46][15+(indice_tarea) + offset_jugador_A].a = attr;
+    } 
+}
+
 void screen_drawBox(uint32_t fInit,
                     uint32_t cInit,
                     uint32_t fSize,

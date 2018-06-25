@@ -70,7 +70,7 @@ _isr%1:
     push 0xF
     push 0xF
     push msg_int_%1
-    call print
+    ;call print
     
     call mantenimiento_scheduler
     ;xchg bx, bx
@@ -161,32 +161,33 @@ _isr33:
 global _isr102
 _isr102:
     pushad
-    xchg bx, bx
+    ;xchg bx, bx
     ;call fin_intr_pic1    
-
     cmp eax, 0x542
     je .Numero
     cmp eax, 0x824
     je .Escribir
 
     ;Leer:
-    push ebx
     push ecx
+    push ebx
     call game_leer
     jmp .fin
 
     .Numero:
         call game_numero
+        mov [esp + 16], eax;
         jmp .fin
 
     .Escribir:
-        push ebx
         push ecx
+        push ebx
         call game_escribir
-        jmp .fin
+        jmp 0x10:0
+        ;jmp .fin
     .fin:
         popad
-        ;mov eax, 0x42
+        ;mov ebx, eax;
         iret
 
 

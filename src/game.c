@@ -7,6 +7,9 @@
 #include "game.h"
 #include "screen.h"
 
+#define LS_INLINE static __inline __attribute__((always_inline))
+
+
 
 void game_inicializar() {
 	//tarea_t* saltadora_A = (*jugador_A).saltadora;
@@ -40,7 +43,7 @@ void game_inicializar() {
 	dir_fisica_codigo = NULL; // DEfinir
 	indice_tarea = tss_nueva_tarea(2, dir_fisica_codigo);
 	(*saltadora_B).indice_tss = (uint16_t)indice_tarea;
-	(*saltadora_B).base_codigo = (uint32_t)dir_fisica_codigo;
+	(*saltadora_B).base_codigo = (*dir_fisica_codigo);
 	(*saltadora_B).indice = 0;
 	(*jugador_B).saltadora = saltadora_B;
 
@@ -54,30 +57,35 @@ void game_inicializar() {
 	(*jugador_B).cazadores = cazadores_B; //cambio pablo
 	(*jugador_B).cant_vidas = 5; //agrego pablo
 	(*jugador_B).ultimo_cazador = cazadores_B; // Modificación: ultimo cazador es puntero a tarea.
+	print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
+	print_hex((*jugador_B).cant_vidas, 1, 43, 45, (C_BG_BLUE | C_FG_WHITE));
+
 
 
 }
 
 uint32_t game_numero() {
 	uint32_t temp = (uint32_t)indice_tarea;
-	print_hex(temp, 8, 2, k, 0xf);
-	k++;
+	//print_hex(temp, 8, 2, k, 0xf);
+	//k++;
     return temp;
 }
 
 uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
-	print_hex(direccion, 8, 2, k, 0xf);
-	k++;
-	uint8_t attr1 = (C_BG_RED | C_FG_RED);           /* Fondo negro y caracter blanco */    
-    uint8_t attr2 = (C_BG_BLUE | C_FG_BLUE);           /* Fondo negro y caracter blanco */    
+	//print_hex(direccion, 8, 2, k, 0xf);
+	//k++;
+	direccion = (direccion <<20 )>>20;
+	uint8_t attr1 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+    uint8_t attr2 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
 	uint8_t character1 = 0x30;                           /* Caracter '0' */
-	uint32_t offset_A = 405;
-    uint32_t offset_B = 442;
-   	uint32_t offset_2 = (direccion/4)/32;
+    uint32_t offset_f = 5;
+	uint32_t offset_c_A = 5;    
+	uint32_t offset_c_B = 42;
+    uint32_t offset_dir_f = (direccion/4)/32;
+    uint32_t offset_dir_c = (direccion/4)-(offset_dir_f*32);
 
    	uint32_t cr3_var = rcr3(); 
    	cr3_var = (cr3_var >> 12)<<12;
-   	
 
 	if(jugador_actual == 0){
 		uint32_t dir_fisica = (*((*jugador_B).saltadora)).base_codigo;
@@ -85,35 +93,38 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
 
 		*((uint32_t*)(dir_fisica+direccion)) = *dato;
 		mmu_unmapearPagina(dir_fisica, cr3_var);
-		uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
-	    uint32_t cInit = offset_B+(direccion/4) + (47*offset_2);
-	    uint32_t fSize = offset_B+(direccion/4) + (47*offset_2);
-	   	uint32_t cSize = offset_B+(direccion/4) + (47*offset_2);
-		screen_drawBox(fInit, cInit, fSize, cSize, attr2, character1);
+		uint32_t fInit = offset_f + offset_dir_f;
+	    uint32_t cInit = offset_c_B + offset_dir_c;
+	    uint32_t fSize = 1;
+	   	uint32_t cSize = 1;
+		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr2);
 	}else{
 		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
 		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
 
 		*((uint32_t*)(dir_fisica+direccion)) = *dato;
 		mmu_unmapearPagina(dir_fisica, cr3_var);
-		uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
-	    uint32_t cInit = offset_A+(direccion/4) + (47*offset_2);
-	    uint32_t fSize = offset_A+(direccion/4) + (47*offset_2);
-	   	uint32_t cSize = offset_A+(direccion/4) + (47*offset_2);
-		screen_drawBox(fInit, cInit, fSize, cSize, attr1, character1);
+		uint32_t fInit = offset_f + offset_dir_f;
+	    uint32_t cInit = offset_c_A + offset_dir_c;
+	    uint32_t fSize = 1;
+	   	uint32_t cSize = 1;
+		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr1);
 	}
     return 1;
 }
 
 uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
-	print_hex(direccion, 8, 2, k, 0xf);
-	k++;
+	//print_hex(direccion, 8, 2, k, 0xf);
+	//k++;
+	direccion = (direccion <<20 )>>20;
 	uint8_t character1 = 0x30;                           /* Caracter '0' */
-	uint8_t attr1 = (C_BG_RED | C_FG_RED);           /* Fondo negro y caracter blanco */    
-    uint8_t attr2 = (C_BG_BLUE | C_FG_BLUE);           /* Fondo negro y caracter blanco */    
-    uint32_t offset_A = 405;
-    uint32_t offset_B = 442;
-    uint32_t offset_2 = (direccion/4)/32;
+	uint8_t attr1 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+    uint8_t attr2 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+    uint32_t offset_f = 5;
+	uint32_t offset_c_A = 5;    
+	uint32_t offset_c_B = 42;
+    uint32_t offset_dir_f = (direccion/4)/32;
+    uint32_t offset_dir_c = (direccion/4)-(offset_dir_f*32);
 
     uint32_t cr3_var = rcr3(); 
    	cr3_var = (cr3_var >> 12)<<12;
@@ -123,21 +134,23 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
 
 		*((uint32_t*)(dir_fisica+direccion)) = *dato;
-		mmu_unmapearPagina(dir_fisica, cr3_var);		uint32_t fInit = offset_B+(direccion/4) + (47*offset_2);
-	    uint32_t cInit = offset_B+(direccion/4) + (47*offset_2);
-	    uint32_t fSize = offset_B+(direccion/4) + (47*offset_2);
-	   	uint32_t cSize = offset_B+(direccion/4) + (47*offset_2);
-		screen_drawBox(fInit, cInit, fSize, cSize, attr2, character1);
+		mmu_unmapearPagina(dir_fisica, cr3_var);
+		uint32_t fInit = offset_f + offset_dir_f;
+	    uint32_t cInit = offset_c_B + offset_dir_c;
+	    uint32_t fSize = 1;
+	   	uint32_t cSize = 1;
+		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr2);
 	}else{
 		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
 		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
 
 		*((uint32_t*)(dir_fisica+direccion)) = *dato;
-		mmu_unmapearPagina(dir_fisica, cr3_var);		uint32_t fInit = offset_A+(direccion/4) + (47*offset_2);
-	    uint32_t cInit = offset_A+(direccion/4) + (47*offset_2);
-	    uint32_t fSize = offset_A+(direccion/4) + (47*offset_2);
-	   	uint32_t cSize = offset_A+(direccion/4) + (47*offset_2);
-		screen_drawBox(fInit, cInit, fSize, cSize, attr1, character1);
+		mmu_unmapearPagina(dir_fisica, cr3_var);
+		uint32_t fInit = offset_f + offset_dir_f;
+	    uint32_t cInit = offset_c_A + offset_dir_c;
+	    uint32_t fSize = 1;
+	   	uint32_t cSize = 1;
+		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr1);
 	}
     return 1;
 }
@@ -184,27 +197,27 @@ tarea_t* inicializar_tarea_t()
 void mantenimiento_scheduler(){
 	if(jugador_actual == 0){
 		if(indice_tarea == 0){
-			if((*jugador_A).cant_vidas == 1){
+			if((*jugador_A).cant_vidas == 1){ //si no le quedan vidas
 				//resetear_juego();
 			}else{
 				(*jugador_A).cant_vidas = ((*jugador_A).cant_vidas) - 1;
+				print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
+				remap_saltadora(jugador_A);
 			}
 		}else{
-				tarea_t* tarea_actual = (*jugador_A).cazadores; // NO TIENE UN PRIMER NODO LA LISTA ???
-				while((*tarea_actual).indice != indice_tarea)
-				{
-				tarea_actual = (*tarea_actual).siguiente;
-				}
-				indice_tarea = (*((*tarea_actual).anterior)).indice;
-				tarea_t* tarea_anterior = (*tarea_actual).anterior;
-				tarea_t* tarea_siguinte = (*tarea_actual).siguiente;
-				(*tarea_anterior).siguiente = (tarea_siguinte);
-				(*tarea_siguinte).anterior = (tarea_anterior);
-
-				//mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
-				//mmu_unmapearPagina((*tarea_actual).base_codigo);
-				//(*jugador_A).ultimo_cazador = (*tarea_anterior).indice;
-			
+				tarea_t* tarea_actual = (*jugador_A).ultimo_cazador;
+				if( (*tarea_actual).indice == (*((*tarea_actual).anterior)).indice ){
+					murio_cazadora((*tarea_actual).indice, jugador_actual);
+					//resetear_juego();
+				}else{
+					murio_cazadora((*tarea_actual).indice, jugador_actual);
+					(*jugador_A).ultimo_cazador	= ((*tarea_actual).anterior);		
+					indice_tarea = (*((*tarea_actual).anterior)).indice;
+					tarea_t* tarea_anterior = (*tarea_actual).anterior;
+					tarea_t* tarea_siguinte = (*tarea_actual).siguiente;
+					(*tarea_anterior).siguiente = (tarea_siguinte);
+					(*tarea_siguinte).anterior = (tarea_anterior);
+				}			
 		}
 	}else{
 		if(indice_tarea == 0){
@@ -212,29 +225,78 @@ void mantenimiento_scheduler(){
 				//resetear_juego();
 			}else{
 				(*jugador_B).cant_vidas = ((*jugador_B).cant_vidas) - 1;
+				print_hex((*jugador_B).cant_vidas, 1, 43, 45, (C_BG_BLUE | C_FG_WHITE));
+				remap_saltadora(jugador_B);
 			}
 		}else{
-				tarea_t* tarea_actual = (*jugador_B).cazadores;
-				while((*tarea_actual).indice != indice_tarea)
-				{
-				tarea_actual = (*tarea_actual).siguiente;
-				}
+			tarea_t* tarea_actual = (*jugador_B).ultimo_cazador;
+			if((*tarea_actual).indice == ((*(*tarea_actual).anterior)).indice ){ //si no hay mas cazadoras
+				murio_cazadora((*tarea_actual).indice, jugador_actual);
+				//resetear_juego();
+			}else{
+				murio_cazadora((*tarea_actual).indice, jugador_actual);
+				(*jugador_B).ultimo_cazador	= ((*tarea_actual).anterior);		
 				indice_tarea = (*((*tarea_actual).anterior)).indice;
 				tarea_t* tarea_anterior = (*tarea_actual).anterior;
 				tarea_t* tarea_siguinte = (*tarea_actual).siguiente;
 				(*tarea_anterior).siguiente = (tarea_siguinte);
 				(*tarea_siguinte).anterior = (tarea_anterior);
-
-				//mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
-				//mmu_unmapearPagina((*tarea_actual).base_codigo);
-				//(*jugador_B).ultimo_cazador = (*tarea_anterior).indice;
-				(*jugador_B).cant_vidas = ((*jugador_B).cant_vidas) - 1;
+			}
 		}
 	}
+	return;
+}
+
+void remap_saltadora(jugador_t* jug){
+	//copio el codigo de la saltadora de nuevo
+	print_hex(jugador_actual, 8, 35, 0, 0xf);
+
+	uint32_t* guardarAca = (uint32_t*)0x8000000;
+	for(int j = 0; j < 1024; j++)
+	{
+		guardarAca[j] = ((uint32_t*)0x10000)[j];
+	}
+	uint32_t dir = (uint32_t)rcr3();
+	//creo nueva tss con nueva pila nivel 0
+	uint32_t posicion_tss = mmu_prox_pag_fisica_libre_kernel();
+	tss* tss_tarea = (tss*)posicion_tss;
+
+	*tss_tarea = (tss)
+	{
+		.esp0 = mmu_prox_pag_fisica_libre_kernel() + 4096,
+		.ss0 = 0xb0,
+		.cr3 = dir,
+		.eflags = 0x202,
+		.esp = 0x8000000 + 4096,
+		.ebp = 0x8000000 + 4096,
+		.eip = 0x8000000,
+		.ss = 0xbb,
+		.es = 0xbb,
+		.cs = 0xab,
+		.ds = 0xbb,
+		.fs = 0xbb,
+		.gs = 0xbb,
+		.iomap = 0xffff
+	};
+
+	uint32_t indice_tarea = (*((*jug).saltadora)).indice_tss;
+
+	gdt[indice_tarea].base_0_15 = (uint32_t) tss_tarea;
+	gdt[indice_tarea].base_23_16 = (uint32_t) tss_tarea >> 16;
+	gdt[indice_tarea].base_31_24 = (uint32_t) tss_tarea >> 24;
+	gdt[indice_tarea].p = 1;
+	gdt[indice_tarea].limit_0_15 = 0x67;
+	gdt[indice_tarea].type = 0x9;
+	gdt[indice_tarea].dpl = 0x3;
+	gdt[indice_tarea].db = 0x1;
 }
 
 void resetear_juego(){
+	__asm __volatile("cli");
+
 	mapa_de_juego();
 	inicializar_sched();
 	game_inicializar();
+	__asm __volatile("sti");
+
 }

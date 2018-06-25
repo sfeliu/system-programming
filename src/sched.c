@@ -26,8 +26,8 @@ void inic_w_k(){
 uint16_t sched_proximoIndice()
 {
 	//__asm __volatile("call fin_intr_pic1");
-	print_hex(jugador_actual, 1, 0, w, 0xf);
-	print_hex(indice_tarea, 1, 0, w+1, 0xf);
+	//print_hex(jugador_actual, 1, 0, w, 0xf);
+	//print_hex(indice_tarea, 1, 0, w+1, 0xf);
 
 	if(jugador_actual == 0)
 	{
@@ -35,18 +35,18 @@ uint16_t sched_proximoIndice()
 		if(indice_tarea == 0)
 		{
 			tarea_t* saltadora = (*jugador_B).saltadora;
-			print_hex(indice_tarea, 1, 0, w+2, 0xf);
-			print_hex((uint32_t)(*saltadora).indice_tss, 1, 0, w+3, 0xf);
-			w=w+5;
+			//print_hex(indice_tarea, 1, 0, w+2, 0xf);
+			//print_hex((uint32_t)(*saltadora).indice_tss, 1, 0, w+3, 0xf);
+			//w=w+5;
 			return (*saltadora).indice_tss;
 		}
 		else
 		{
 			tarea_t siguienteTarea = proximaTarea(jugador_B);
 			indice_tarea = siguienteTarea.indice;
-			print_hex(indice_tarea, 1, 0, w+2, 0xf);
-			print_hex((uint32_t)(siguienteTarea.indice_tss), 1, 0, w+3, 0xf);
-			w=w+5;
+			//print_hex(indice_tarea, 1, 0, w+2, 0xf);
+			//print_hex((uint32_t)(siguienteTarea.indice_tss), 1, 0, w+3, 0xf);
+			//w=w+5;
 			return siguienteTarea.indice_tss;
 		}
 	}
@@ -57,9 +57,9 @@ uint16_t sched_proximoIndice()
 		{
 			indice_tarea = 0;
 			tarea_t* saltadora = (*jugador_A).saltadora;
-			print_hex(indice_tarea, 1, 0, w+2, 0xf);
-			print_hex((uint32_t)((*saltadora).indice_tss), 1, 0, w+3, 0xf);
-			w=w+5;
+			//print_hex(indice_tarea, 1, 0, w+2, 0xf);
+			//print_hex((uint32_t)((*saltadora).indice_tss), 1, 0, w+3, 0xf);
+			//w=w+5;
 			return (*saltadora).indice_tss;
 		}
 		else
@@ -67,9 +67,9 @@ uint16_t sched_proximoIndice()
 			tarea_t siguienteTarea = proximaTarea(jugador_A);
 
 			indice_tarea = siguienteTarea.indice;
-			print_hex(indice_tarea, 1, 0, w+2, 0xf);
-			print_hex((uint32_t)siguienteTarea.indice_tss, 1, 0, w+3, 0xf);
-			w=w+5;
+			//print_hex(indice_tarea, 1, 0, w+2, 0xf);
+			//print_hex((uint32_t)siguienteTarea.indice_tss, 1, 0, w+3, 0xf);
+			//w=w+5;
 			return siguienteTarea.indice_tss;
 		}
 	}

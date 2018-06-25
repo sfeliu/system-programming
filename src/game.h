@@ -22,6 +22,8 @@ uint32_t game_numero();
 
 uint32_t game_escribir(uint32_t direccion, uint32_t* dato);
 
+void remap_saltadora(jugador_t* jug);
+
 uint32_t game_leer(uint32_t direccion, uint32_t* dato);
 
 void agregar_cazador(tarea_t*, uint32_t, uint32_t*, uint32_t);
