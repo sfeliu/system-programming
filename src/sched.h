@@ -17,6 +17,7 @@ typedef struct str_tarea {
 	uint16_t indice_tss;
 	uint32_t base_codigo;
 	uint8_t indice;
+	uint8_t indice_reloj;
 	struct str_tarea* siguiente;
 	struct str_tarea* anterior;
 }__attribute__((__packed__)) tarea_t;
@@ -33,6 +34,7 @@ tarea_t* tss_tarea_idle;
 
 uint8_t indice_tarea;
 uint8_t jugador_actual;
+extern uint8_t caracteres_reloj[];
 
 jugador_t* jugador_A;
 jugador_t* jugador_B;

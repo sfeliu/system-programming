@@ -12,6 +12,7 @@ extern game_escribir
 extern game_leer
 extern mantenimiento_scheduler
 extern print_saltador
+extern actualizar_clock_tarea
 
 BITS 32
 
@@ -130,6 +131,7 @@ global _isr32
 _isr32:
     call proximoReloj
     pushad
+    call actualizar_clock_tarea
     ;xchg bx, bx
     mov eax, [esp + 32]         ; eip tarea actual
     push eax

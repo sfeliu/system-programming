@@ -22,6 +22,7 @@ void game_inicializar() {
 	(*saltadora_A).indice_tss = (uint16_t)indice_tarea;
 	(*saltadora_A).base_codigo = *dir_fisica_codigo;
 	(*saltadora_A).indice = 0;
+	(*saltadora_A).indice_reloj = 0;
 	(*jugador_A).saltadora = saltadora_A;
 	//print_hex((uint32_t)(*jugador_A), 8, 0, w, 0xf);
 	//print_hex((uint32_t)(*jugador_B), 8, 0, w+1, 0xf);
@@ -45,6 +46,7 @@ void game_inicializar() {
 	(*saltadora_B).indice_tss = (uint16_t)indice_tarea;
 	(*saltadora_B).base_codigo = (*dir_fisica_codigo);
 	(*saltadora_B).indice = 0;
+	(*saltadora_B).indice_reloj = 0;
 	(*jugador_B).saltadora = saltadora_B;
 
 	tarea_t* cazadores_B = inicializar_tarea_t();
@@ -163,6 +165,7 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 		.indice_tss = (uint16_t)indice_tarea,
 		.base_codigo = *dir_fisica_codigo,
 		.indice = (uint8_t)indice_cazador,
+		.indice_reloj = 0,
 	};
 	if(indice_cazador == 1)
 	{
@@ -324,4 +327,28 @@ void print_saltador(uint32_t eip_tarea){
 //    	print((uint8_t*) &text, offset_f, offset_c, attr);
 		screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
 	}
+}
+
+void actualizar_clock_tarea(){
+	uint32_t offset_f = 46;
+	uint32_t offset_c = 15;
+	uint8_t attr = (C_BG_BLACK | C_FG_WHITE); 
+	jugador_t* jugador = 0;
+	uint8_t indice_reloj_tarea = 0;
+	if(jugador_actual == 0){
+		jugador = jugador_A;
+	}else{
+		jugador = jugador_B;
+		offset_c = offset_c + 37;
+	}
+	if(indice_tarea == 0){
+		indice_reloj_tarea = (*(*jugador).saltadora).indice_reloj;
+		(*(*jugador).saltadora).indice_reloj = (indice_reloj_tarea + 1) % 4;
+	}else{
+		indice_reloj_tarea = (*(*jugador).ultimo_cazador).indice_reloj;
+		(*(*jugador).ultimo_cazador).indice_reloj = (indice_reloj_tarea + 1) % 4;
+		offset_c = offset_c + ((*(*jugador).ultimo_cazador).indice*2);
+	}
+	uint32_t text = caracteres_reloj[indice_reloj_tarea];
+	screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
 }
