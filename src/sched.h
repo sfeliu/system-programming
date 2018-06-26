@@ -35,6 +35,8 @@ tarea_t* tss_tarea_idle;
 uint8_t indice_tarea;
 uint8_t jugador_actual;
 extern uint8_t caracteres_reloj[];
+uint16_t* ultima_pantalla;
+uint8_t debugging;
 
 jugador_t* jugador_A;
 jugador_t* jugador_B;

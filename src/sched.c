@@ -15,6 +15,8 @@ void inicializar_sched()
 {
 	indice_tarea = 0;
 	jugador_actual = 0;
+	debugging = 0;
+	ultima_pantalla = (uint16_t*) mmu_prox_pag_fisica_libre_kernel();
 
 	jugador_A = (jugador_t*) mmu_prox_pag_fisica_libre_kernel();
 	jugador_B = (jugador_t*) mmu_prox_pag_fisica_libre_kernel();

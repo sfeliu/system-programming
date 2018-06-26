@@ -55,6 +55,8 @@
 
 /* Definiciones pantalla */
 /* -------------------------------------------------------------------------- */
+#define VIDEO_FILS 50
+#define VIDEO_COLS 80
 #define OFFSET_FILA		        5  /* Posición en la que arranca la fila de la pantalla de ambos jugadores */
 #define OFFSET_COLUMNA_A        5  /* Posición en la que arranca la columna de la pantalla de jugador A */
 #define OFFSET_COLUMNA_B        42 /* Posición en la que arranca la columna de la pantalla de jugador B */

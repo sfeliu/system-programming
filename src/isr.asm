@@ -13,6 +13,7 @@ extern game_leer
 extern mantenimiento_scheduler
 extern print_saltador
 extern actualizar_clock_tarea
+extern actulizar_debugging
 
 BITS 32
 
@@ -159,7 +160,6 @@ _isr32:
 ;; -------------------------------------------------------------------------- ;;
 global _isr33
 _isr33:
-    
     call escribirTecla
     iret
 ;;
@@ -229,7 +229,8 @@ escribirTecla:
         call fin_intr_pic1
         in al, 0x60
         push eax
-        call imprimirTecla
+        ;call imprimirTecla
+        call actulizar_debugging
         pop eax
         popad
         ret

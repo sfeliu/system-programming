@@ -61,9 +61,6 @@ void game_inicializar() {
 	(*jugador_B).ultimo_cazador = cazadores_B; // Modificación: ultimo cazador es puntero a tarea.
 	print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
 	print_hex((*jugador_B).cant_vidas, 1, 43, 45, (C_BG_BLUE | C_FG_WHITE));
-
-
-
 }
 
 uint32_t game_numero() {
@@ -199,6 +196,11 @@ tarea_t* inicializar_tarea_t()
 }
 
 void mantenimiento_scheduler(){
+	// debuggear seria una funcion que guarda la pantalla, pone los datos en pantalla y salta a la idle a esperar q toquen 'y'
+	// no se como esperar para salir de debug.
+	/*if(debugging == 1){
+		debuggear();
+	}*/
 	if(jugador_actual == 0){
 		if(indice_tarea == 0){
 			if((*jugador_A).cant_vidas == 1){ //si no le quedan vidas
@@ -296,6 +298,62 @@ void remap_saltadora(jugador_t* jug){
 	//gdt[indice_tarea].db = 0x1;
 }
 
+void debuggear(){
+	// Guardo último pantallaso
+	for(int j = 0; j < VIDEO_FILS*VIDEO_COLS; j++)
+	{
+		ultima_pantalla[j] = ((uint16_t*)VIDEO)[j];
+	}
+
+	screen_drawBox(2, 25, 36, 30, 0x4F, (C_BG_BLACK | C_FG_BLACK));
+	screen_drawBox(3, 26, 34, 28, 0x4F, (C_BG_LIGHT_GREY | C_FG_LIGHT_GREY));
+
+	print((uint8_t*) "eax", 27, 4, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "ebx", 27, 6, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "ecx", 27, 8, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "edx", 27, 10, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "esi", 27, 12, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "edi", 27, 14, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "ebp", 27, 16, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "esp", 27, 18, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "eip", 27, 20, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " cs", 27, 22, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " ds", 27, 24, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " es", 27, 26, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " fs", 27, 28, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " gs", 27, 30, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " ss", 27, 32, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) " eflags", 27, 35, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "cr0", 41, 5, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "cr2", 41, 7, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "cr3", 41, 9, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "cr4", 41, 11, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	print((uint8_t*) "stack", 41, 22, (C_BG_LIGHT_GREY | C_FG_BLACK));
+	
+	// DE aca para abajo esta en duda, mi idea era agarrar las cosas de la tss e imprimirlas en su respectivo lugar.
+	jugador_t* jugador = 0x0;
+	tarea_t* tarea = 0x0;
+	if(jugador_actual == 0){
+		jugador = jugador_A;
+	}else{
+		jugador = jugador_B;
+	}
+	if(indice_tarea == 0){
+		tarea = (*jugador).saltadora;
+	}else{
+		tarea = (*jugador).ultimo_cazador;
+	}
+	uint32_t indice_tarea = (*tarea).indice_tss;
+	uint32_t base_0_15 = gdt[indice_tarea].base_0_15; 
+	uint32_t base_23_16 = gdt[indice_tarea].base_23_16; 
+	uint32_t base_31_24 = gdt[indice_tarea].base_31_24; 
+	// tss_tarea deberia ser la direccion a la tss de la tarea actual, hay q ver si funca.
+	tss* tss_tarea = (tss*)((base_31_24<<24)|(base_23_16<<16)|(base_0_15));
+	// lo de aca abajo es solo para q no se queje el compilador, se borra
+	tarea = (tarea_t*) tss_tarea;
+
+}
+
 void resetear_juego(){
 	__asm __volatile("cli");
 
@@ -351,4 +409,17 @@ void actualizar_clock_tarea(){
 	}
 	uint32_t text = caracteres_reloj[indice_reloj_tarea];
 	screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
+}
+
+void actulizar_debugging(uint8_t scanCode){
+	if(scanCode == 0x15){
+		if(debugging == 0){
+			debugging = 1;
+			screen_drawBox(0, 0, 3, 12, 0x4F, (C_BG_LIGHT_GREY | C_FG_LIGHT_GREY));
+			print((uint8_t*) " MODO DEBUG", 0, 1, (C_BG_LIGHT_GREY | C_FG_BLACK));
+		}else{
+			debugging = 0;
+			screen_drawBox(0, 0, 3, 12, 0x4F, (C_BG_BLACK | C_FG_BLACK));
+		}
+	}
 }
