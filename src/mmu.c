@@ -135,6 +135,7 @@ void mmu_mapearPagina(uint32_t virtual, uint32_t cr3, uint32_t fisica, uint8_t r
 	table[i_tab].p = 1;
 	table[i_tab].rw = rw_tab;
 	table[i_tab].us = us_tab;
+	tlbflush();
 }
 
 void mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
@@ -150,4 +151,5 @@ void mmu_unmapearPagina(uint32_t virtual, uint32_t cr3)
 
 	table_entry_t* table = (table_entry_t*) (directory[i_dir].dir_table << 12);
 	table[i_tab].p = 0;
+	tlbflush();
 }

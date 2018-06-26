@@ -11,6 +11,7 @@ extern game_numero
 extern game_escribir
 extern game_leer
 extern mantenimiento_scheduler
+extern print_saltador
 
 BITS 32
 
@@ -71,9 +72,9 @@ _isr%1:
     push 0xF
     push msg_int_%1
     ;call print
+    ;xchg bx, bx
     
     call mantenimiento_scheduler
-    ;xchg bx, bx
     jmp 0x10:0
 
     jmp $
@@ -129,7 +130,11 @@ global _isr32
 _isr32:
     call proximoReloj
     pushad
-    xchg bx, bx
+    ;xchg bx, bx
+    mov eax, [esp + 32]         ; eip tarea actual
+    push eax
+    call print_saltador
+    pop eax
     call sched_proximoIndice
 
     str cx
@@ -172,6 +177,8 @@ _isr102:
     push ecx
     push ebx
     call game_leer
+    pop ebx
+    pop ecx
     jmp .fin
 
     .Numero:
@@ -184,6 +191,8 @@ _isr102:
         push ebx
         call game_escribir
         jmp 0x10:0
+        pop ebx
+        pop ecx
         ;jmp .fin
     .fin:
         popad

@@ -53,6 +53,14 @@
 #define AREA_LIBRE_KERNEL		0x00100000 /* direccion fisica del comienzo del area libre del kernel*/
 #define AREA_LIBRE_TAREAS		0x00400000 /* direccion fisica del comienzo del area libre de tareas*/
 
+/* Definiciones pantalla */
+/* -------------------------------------------------------------------------- */
+#define OFFSET_FILA		        5  /* Posición en la que arranca la fila de la pantalla de ambos jugadores */
+#define OFFSET_COLUMNA_A        5  /* Posición en la que arranca la columna de la pantalla de jugador A */
+#define OFFSET_COLUMNA_B        42 /* Posición en la que arranca la columna de la pantalla de jugador B */
+#define COLOR_A					(C_BG_RED | C_FG_WHITE) /* Fondo negro y caracter blanco */    
+#define COLOR_B		   			(C_BG_BLUE | C_FG_WHITE) /* Fondo negro y caracter blanco */ 
+
 /* Colores de pantalla */
 /* -------------------------------------------------------------------------- */
 #define NEGRO              		0x0 /* Caracter | 4 << FONDO */

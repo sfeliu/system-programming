@@ -75,9 +75,9 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
 	//print_hex(direccion, 8, 2, k, 0xf);
 	//k++;
 	direccion = (direccion <<20 )>>20;
-	uint8_t attr1 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-    uint8_t attr2 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-	uint8_t character1 = 0x30;                           /* Caracter '0' */
+	uint8_t attr2 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+    uint8_t attr1 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+	uint8_t character1 = 0x58;                           /* Caracter 'X' */
     uint32_t offset_f = 5;
 	uint32_t offset_c_A = 5;    
 	uint32_t offset_c_B = 42;
@@ -117,9 +117,9 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 	//print_hex(direccion, 8, 2, k, 0xf);
 	//k++;
 	direccion = (direccion <<20 )>>20;
-	uint8_t character1 = 0x30;                           /* Caracter '0' */
-	uint8_t attr1 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-    uint8_t attr2 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+	uint8_t character1 = 0x0;                           /* Caracter '(space)' */
+	uint8_t attr2 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
+    uint8_t attr1 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
     uint32_t offset_f = 5;
 	uint32_t offset_c_A = 5;    
 	uint32_t offset_c_B = 42;
@@ -133,7 +133,7 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 		uint32_t dir_fisica = (*((*jugador_B).saltadora)).base_codigo;
 		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
 
-		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		*dato = *((uint32_t*)(dir_fisica+direccion));
 		mmu_unmapearPagina(dir_fisica, cr3_var);
 		uint32_t fInit = offset_f + offset_dir_f;
 	    uint32_t cInit = offset_c_B + offset_dir_c;
@@ -144,7 +144,8 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
 		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
 
-		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		*dato = *((uint32_t*)(dir_fisica+direccion));
+		//*((uint32_t*)(dir_fisica+direccion)) = *dato;
 		mmu_unmapearPagina(dir_fisica, cr3_var);
 		uint32_t fInit = offset_f + offset_dir_f;
 	    uint32_t cInit = offset_c_A + offset_dir_c;
@@ -198,6 +199,8 @@ void mantenimiento_scheduler(){
 	if(jugador_actual == 0){
 		if(indice_tarea == 0){
 			if((*jugador_A).cant_vidas == 1){ //si no le quedan vidas
+				(*jugador_A).cant_vidas = ((*jugador_A).cant_vidas) - 1;
+				print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
 				//resetear_juego();
 			}else{
 				(*jugador_A).cant_vidas = ((*jugador_A).cant_vidas) - 1;
@@ -244,12 +247,11 @@ void mantenimiento_scheduler(){
 			}
 		}
 	}
-	return;
 }
 
 void remap_saltadora(jugador_t* jug){
 	//copio el codigo de la saltadora de nuevo
-	print_hex(jugador_actual, 8, 35, 0, 0xf);
+	//print_hex(jugador_actual, 8, 35, 0, 0xf);
 
 	uint32_t* guardarAca = (uint32_t*)0x8000000;
 	for(int j = 0; j < 1024; j++)
@@ -284,11 +286,11 @@ void remap_saltadora(jugador_t* jug){
 	gdt[indice_tarea].base_0_15 = (uint32_t) tss_tarea;
 	gdt[indice_tarea].base_23_16 = (uint32_t) tss_tarea >> 16;
 	gdt[indice_tarea].base_31_24 = (uint32_t) tss_tarea >> 24;
-	gdt[indice_tarea].p = 1;
-	gdt[indice_tarea].limit_0_15 = 0x67;
-	gdt[indice_tarea].type = 0x9;
-	gdt[indice_tarea].dpl = 0x3;
-	gdt[indice_tarea].db = 0x1;
+	//gdt[indice_tarea].p = 1;
+	//gdt[indice_tarea].limit_0_15 = 0x67;
+	//gdt[indice_tarea].type = 0x9;
+	//gdt[indice_tarea].dpl = 0x3;
+	//gdt[indice_tarea].db = 0x1;
 }
 
 void resetear_juego(){
@@ -299,4 +301,27 @@ void resetear_juego(){
 	game_inicializar();
 	__asm __volatile("sti");
 
+}
+
+void print_saltador(uint32_t eip_tarea){
+	if(indice_tarea == 0 && eip_tarea >= 0x8000000){
+		uint32_t offset = (eip_tarea << 20) >> 20;
+
+    	uint32_t offset_f = (offset/4)/32;
+    	uint32_t offset_c = (offset/4)-(offset_f*32);
+    	uint8_t attr = 0x0;
+    	if(jugador_actual == 0)
+    	{
+    		offset_c = offset_c + OFFSET_COLUMNA_A;
+    		attr = COLOR_A;
+    	}
+    	else
+    	{
+    		offset_c = offset_c + OFFSET_COLUMNA_B;
+    		attr = COLOR_B;
+    	}
+    	uint8_t text = 0x4F;
+//    	print((uint8_t*) &text, offset_f, offset_c, attr);
+		screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
+	}
 }

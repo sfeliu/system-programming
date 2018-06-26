@@ -116,7 +116,7 @@ void mapa_de_juego(){
     uint8_t n = 0;
     for (int f = 0; f < VIDEO_FILS; f++) {
         for (int c = 0; c < VIDEO_COLS; c++) {
-            if(5<=f && f<=36 && ((5<=c && c<=36) || (42<=c && c<=74)) ){
+            if(5<=f && f<=36 && ((5<=c && c<=36) || (42<=c && c<=73)) ){
                 p[f][c].c = character1;
                 p[f][c].a = attr2;
             }else
@@ -169,15 +169,15 @@ void mapa_de_juego(){
         if(c<=14 || (c>=21 && c<=30)){
             p[3][c].c = character1 + n;
             p[3][c].a = attr3;
-            p[3][c+38].c = character1 + n;
-            p[3][c+38].a = attr3;
+            p[3][c+37].c = character1 + n;
+            p[3][c+37].a = attr3;
             n++;
             if(c == 14 || c == 30){n=0;}
         }else{
             p[3][c].c = character2 + n;
             p[3][c].a = attr3;
-            p[3][c+38].c = character2 + n;
-            p[3][c+38].a = attr3;
+            p[3][c+37].c = character2 + n;
+            p[3][c+37].a = attr3;
             n++;
             if(c == 20){n=0;}
         } 
