@@ -195,12 +195,13 @@ tarea_t* inicializar_tarea_t()
 	return guardarAca;
 }
 
+
 void mantenimiento_scheduler(){
-	// debuggear seria una funcion que guarda la pantalla, pone los datos en pantalla y salta a la idle a esperar q toquen 'y'
-	// no se como esperar para salir de debug.
-	/*if(debugging == 1){
-		debuggear();
-	}*/
+	if(reestablecer_pausa == 1){
+		reestablecer_pausa = 0;
+		restaurar_pantalla();
+		screen_drawBox(0, 0, 3, 12, 0x4F, (C_BG_BLACK | C_FG_BLACK));
+	}
 	if(jugador_actual == 0){
 		if(indice_tarea == 0){
 			if((*jugador_A).cant_vidas == 1){ //si no le quedan vidas
@@ -254,6 +255,14 @@ void mantenimiento_scheduler(){
 	}
 }
 
+
+void restaurar_pantalla(){
+	for(int j = 0; j < VIDEO_FILS*VIDEO_COLS; j++)
+	{
+		((uint16_t*)VIDEO)[j] = ultima_pantalla[j];
+	}
+} 
+
 void remap_saltadora(jugador_t* jug){
 	//copio el codigo de la saltadora de nuevo
 	//print_hex(jugador_actual, 8, 35, 0, 0xf);
@@ -300,6 +309,7 @@ void remap_saltadora(jugador_t* jug){
 
 void debuggear(){
 	// Guardo último pantallaso
+	paused = 1;
 	for(int j = 0; j < VIDEO_FILS*VIDEO_COLS; j++)
 	{
 		ultima_pantalla[j] = ((uint16_t*)VIDEO)[j];
@@ -330,7 +340,6 @@ void debuggear(){
 	print((uint8_t*) "cr4", 41, 11, (C_BG_LIGHT_GREY | C_FG_BLACK));
 	print((uint8_t*) "stack", 41, 22, (C_BG_LIGHT_GREY | C_FG_BLACK));
 	
-	// DE aca para abajo esta en duda, mi idea era agarrar las cosas de la tss e imprimirlas en su respectivo lugar.
 	jugador_t* jugador = 0x0;
 	tarea_t* tarea = 0x0;
 	if(jugador_actual == 0){
@@ -343,14 +352,64 @@ void debuggear(){
 	}else{
 		tarea = (*jugador).ultimo_cazador;
 	}
+
 	uint32_t indice_tarea = (*tarea).indice_tss;
-	uint32_t base_0_15 = gdt[indice_tarea].base_0_15; 
-	uint32_t base_23_16 = gdt[indice_tarea].base_23_16; 
-	uint32_t base_31_24 = gdt[indice_tarea].base_31_24; 
+	uint32_t base_0_15 = (uint32_t)gdt[indice_tarea].base_0_15; 
+	uint32_t base_23_16 = (uint32_t)gdt[indice_tarea].base_23_16; 
+	uint32_t base_31_24 = (uint32_t)gdt[indice_tarea].base_31_24; 
 	// tss_tarea deberia ser la direccion a la tss de la tarea actual, hay q ver si funca.
 	tss* tss_tarea = (tss*)((base_31_24<<24)|(base_23_16<<16)|(base_0_15));
-	// lo de aca abajo es solo para q no se queje el compilador, se borra
-	tarea = (tarea_t*) tss_tarea;
+	
+	uint32_t eax = (*tss_tarea).eax;
+	print_hex(eax, 8, 31, 4, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t ebx = (*tss_tarea).ebx;
+	print_hex(ebx, 8, 31, 6, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t ecx = (*tss_tarea).ecx;
+	print_hex(ecx, 8, 31, 8, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t edx = (*tss_tarea).edx;
+	print_hex(edx, 8, 31, 10, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t esi = (*tss_tarea).esi;
+	print_hex(esi, 8, 31, 12, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t edi = (*tss_tarea).edi;
+	print_hex(edi, 8, 31, 14, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t ebp = (*tss_tarea).ebp;
+	print_hex(ebp, 8, 31, 16, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t esp = (*tss_tarea).esp;
+	print_hex(esp, 8, 31, 18, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t eip = (*tss_tarea).eip;
+	print_hex(eip, 8, 31, 20, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t cs = (uint32_t)(*tss_tarea).cs;
+	print_hex(cs, 4, 31, 22, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t ds = (uint32_t)(*tss_tarea).ds;
+	print_hex(ds, 4, 31, 24, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t es = (uint32_t)(*tss_tarea).es;
+	print_hex(es, 4, 31, 26, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t fs = (uint32_t)(*tss_tarea).fs;
+	print_hex(fs, 4, 31, 28, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t gs = (uint32_t)(*tss_tarea).gs;
+	print_hex(gs, 4, 31, 30, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t ss = (uint32_t)(*tss_tarea).ss;
+	print_hex(ss, 4, 31, 32, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t eflags = (*tss_tarea).eflags;
+	print_hex(eflags, 8, 34, 35, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t cr0 = rcr0();
+	print_hex(cr0, 8, 45, 5, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t cr2 = rcr2();
+	print_hex(cr2, 8, 45, 7, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t cr3 = (*tss_tarea).cr3;
+	print_hex(cr3, 8, 45, 9, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	uint32_t cr4 = rcr4();
+	print_hex(cr4, 8, 45, 11, (C_BG_LIGHT_GREY | C_FG_WHITE));
+
+	// Casos borde, pila lvl 3.
+	if(esp < 0x8001000 - 4)
+		print_hex((*((uint32_t*)esp)), 8, 41, 25, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	if(esp < 0x8001000 - 8)
+		print_hex((*((uint32_t*)(esp + 4))), 8, 41, 26, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	if(esp < 0x8001000 - 12)
+		print_hex((*((uint32_t*)(esp + 8))), 8, 41, 27, (C_BG_LIGHT_GREY | C_FG_WHITE));
+	if(esp < 0x8001000 - 16)	
+		print_hex((*((uint32_t*)(esp + 12))), 8, 41, 28, (C_BG_LIGHT_GREY | C_FG_WHITE));
 
 }
 
@@ -418,6 +477,10 @@ void actulizar_debugging(uint8_t scanCode){
 			screen_drawBox(0, 0, 3, 12, 0x4F, (C_BG_LIGHT_GREY | C_FG_LIGHT_GREY));
 			print((uint8_t*) " MODO DEBUG", 0, 1, (C_BG_LIGHT_GREY | C_FG_BLACK));
 		}else{
+			if(paused == 1){
+				paused = 0;
+				reestablecer_pausa = 1;
+			}
 			debugging = 0;
 			screen_drawBox(0, 0, 3, 12, 0x4F, (C_BG_BLACK | C_FG_BLACK));
 		}

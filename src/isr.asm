@@ -14,6 +14,9 @@ extern mantenimiento_scheduler
 extern print_saltador
 extern actualizar_clock_tarea
 extern actulizar_debugging
+extern paused
+extern debugging
+extern debuggear
 
 BITS 32
 
@@ -75,11 +78,19 @@ _isr%1:
     push msg_int_%1
     ;call print
     ;xchg bx, bx
+
+    mov eax, 1
+    mov ecx, [debugging]
+    cmp ecx, eax
+    jne .no_debuggear
+    call debuggear
+    jmp 0x10:0
     
+    .no_debuggear:
     call mantenimiento_scheduler
     jmp 0x10:0
 
-    jmp $
+    iret
 
 %endmacro
 
@@ -130,10 +141,16 @@ ISR 31
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
-    call proximoReloj
     pushad
+    mov eax, 1
+    mov ecx, [paused]
+    cmp ecx, eax
+    jne .no_pauseado
+    call fin_intr_pic1
+    jmp .fin
+    .no_pauseado:
+    call proximoReloj
     call actualizar_clock_tarea
-    ;xchg bx, bx
     mov eax, [esp + 32]         ; eip tarea actual
     push eax
     call print_saltador

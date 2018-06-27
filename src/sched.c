@@ -16,7 +16,10 @@ void inicializar_sched()
 	indice_tarea = 0;
 	jugador_actual = 0;
 	debugging = 0;
+	paused = 0;
+	reestablecer_pausa = 0;
 	ultima_pantalla = (uint16_t*) mmu_prox_pag_fisica_libre_kernel();
+	mmu_prox_pag_fisica_libre_kernel(); 
 
 	jugador_A = (jugador_t*) mmu_prox_pag_fisica_libre_kernel();
 	jugador_B = (jugador_t*) mmu_prox_pag_fisica_libre_kernel();
@@ -27,12 +30,44 @@ void inic_w_k(){
 	k=0;
 }
 
+uint16_t devolver_mismoIndice(){
+	if(jugador_actual == 0)
+	{
+		if(indice_tarea == 0)
+		{
+			tarea_t* saltadora = (*jugador_A).saltadora;
+			return (*saltadora).indice_tss;
+		}
+		else
+		{
+			tarea_t* cazadora = (*jugador_A).ultimo_cazador;;
+			return (*cazadora).indice_tss;
+		}
+	}
+	else
+	{
+		if(indice_tarea == 0)
+		{
+			tarea_t* saltadora = (*jugador_B).saltadora;
+			return (*saltadora).indice_tss;
+		}
+		else
+		{
+			tarea_t* cazadora = (*jugador_B).ultimo_cazador;;
+			return (*cazadora).indice_tss;
+		}
+	}
+}
+
+
 uint16_t sched_proximoIndice()
 {
 	//__asm __volatile("call fin_intr_pic1");
 	//print_hex(jugador_actual, 1, 0, w, 0xf);
 	//print_hex(indice_tarea, 1, 0, w+1, 0xf);
-
+	if(reestablecer_pausa == 1){
+		return devolver_mismoIndice();
+	}
 	if(jugador_actual == 0)
 	{
 		jugador_actual = 1;
