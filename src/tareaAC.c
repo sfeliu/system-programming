@@ -33,14 +33,14 @@ void task() {
         }
     }
     
-    if(numero==4) {
+    /*if(numero==4) {
         uint32_t a = 0xA5A5A5A5;
         uint32_t i=0;
         while(1) {
             syscall_leer(i%(4096-4),&a);
             i=i+4;
         }
-    }
+    }*/
     
     while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }
 }

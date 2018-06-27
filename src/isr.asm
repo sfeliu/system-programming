@@ -71,19 +71,22 @@ extern sched_proximoIndice
 global _isr%1
 
 _isr%1:
-    mov eax, %1
-    push 0xF
-    push 0xF
-    push 0xF
-    push msg_int_%1
+    ;mov eax, %1
+    ;push 0xF
+    ;push 0xF
+    ;push 0xF
+    ;push msg_int_%1
     ;call print
     ;xchg bx, bx
-
+    pushad
+    push esp
     mov eax, 1
     mov ecx, [debugging]
     cmp ecx, eax
     jne .no_debuggear
     call debuggear
+    pop eax
+    popad
     jmp 0x10:0
     
     .no_debuggear:

@@ -63,99 +63,6 @@ void game_inicializar() {
 	print_hex((*jugador_B).cant_vidas, 1, 43, 45, (C_BG_BLUE | C_FG_WHITE));
 }
 
-uint32_t game_numero() {
-	uint32_t temp = (uint32_t)indice_tarea;
-	//print_hex(temp, 8, 2, k, 0xf);
-	//k++;
-    return temp;
-}
-
-uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
-	//print_hex(direccion, 8, 2, k, 0xf);
-	//k++;
-	direccion = (direccion <<20 )>>20;
-	uint8_t attr2 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-    uint8_t attr1 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-	uint8_t character1 = 0x58;                           /* Caracter 'X' */
-    uint32_t offset_f = 5;
-	uint32_t offset_c_A = 5;    
-	uint32_t offset_c_B = 42;
-    uint32_t offset_dir_f = (direccion/4)/32;
-    uint32_t offset_dir_c = (direccion/4)-(offset_dir_f*32);
-
-   	uint32_t cr3_var = rcr3(); 
-   	cr3_var = (cr3_var >> 12)<<12;
-
-	if(jugador_actual == 0){
-		uint32_t dir_fisica = (*((*jugador_B).saltadora)).base_codigo;
-		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
-
-		*((uint32_t*)(dir_fisica+direccion)) = *dato;
-		mmu_unmapearPagina(dir_fisica, cr3_var);
-		uint32_t fInit = offset_f + offset_dir_f;
-	    uint32_t cInit = offset_c_B + offset_dir_c;
-	    uint32_t fSize = 1;
-	   	uint32_t cSize = 1;
-		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr2);
-	}else{
-		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
-		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
-
-		*((uint32_t*)(dir_fisica+direccion)) = *dato;
-		mmu_unmapearPagina(dir_fisica, cr3_var);
-		uint32_t fInit = offset_f + offset_dir_f;
-	    uint32_t cInit = offset_c_A + offset_dir_c;
-	    uint32_t fSize = 1;
-	   	uint32_t cSize = 1;
-		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr1);
-	}
-    return 1;
-}
-
-uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
-	//print_hex(direccion, 8, 2, k, 0xf);
-	//k++;
-	direccion = (direccion <<20 )>>20;
-	uint8_t character1 = 0x0;                           /* Caracter '(space)' */
-	uint8_t attr2 = (C_BG_RED | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-    uint8_t attr1 = (C_BG_BLUE | C_FG_WHITE);           /* Fondo negro y caracter blanco */    
-    uint32_t offset_f = 5;
-	uint32_t offset_c_A = 5;    
-	uint32_t offset_c_B = 42;
-    uint32_t offset_dir_f = (direccion/4)/32;
-    uint32_t offset_dir_c = (direccion/4)-(offset_dir_f*32);
-
-    uint32_t cr3_var = rcr3(); 
-   	cr3_var = (cr3_var >> 12)<<12;
-
-	if(jugador_actual == 0){
-		uint32_t dir_fisica = (*((*jugador_B).saltadora)).base_codigo;
-		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
-
-		*dato = *((uint32_t*)(dir_fisica+direccion));
-		mmu_unmapearPagina(dir_fisica, cr3_var);
-		uint32_t fInit = offset_f + offset_dir_f;
-	    uint32_t cInit = offset_c_B + offset_dir_c;
-	    uint32_t fSize = 1;
-	   	uint32_t cSize = 1;
-		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr2);
-	}else{
-		uint32_t dir_fisica = (*((*jugador_A).saltadora)).base_codigo;
-		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
-
-		*dato = *((uint32_t*)(dir_fisica+direccion));
-		//*((uint32_t*)(dir_fisica+direccion)) = *dato;
-		mmu_unmapearPagina(dir_fisica, cr3_var);
-		uint32_t fInit = offset_f + offset_dir_f;
-	    uint32_t cInit = offset_c_A + offset_dir_c;
-	    uint32_t fSize = 1;
-	   	uint32_t cSize = 1;
-		screen_drawBox(fInit, cInit, fSize, cSize, character1, attr1);
-	}
-    return 1;
-}
-
-
 void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisica_codigo, uint32_t indice_cazador)
 {
 	tarea_t nueva_tarea = (tarea_t){
@@ -187,6 +94,141 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 		(*primero).anterior = (tarea_t*) guardarAca ;
 	}
 }
+
+
+uint32_t game_numero() {
+	uint32_t temp = (uint32_t)indice_tarea;
+	//print_hex(temp, 8, 2, k, 0xf);
+	//k++;
+    return temp;
+}
+
+uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
+	//print_hex(direccion, 8, 2, k, 0xf);
+	//k++;
+	if(direccion >= 0 && direccion < 0x1000)
+	{
+		direccion = (direccion <<20 )>>20;
+		uint8_t character = 0x58;                           /* Caracter 'X' */
+	   	uint8_t attr = 0x0;
+	    uint32_t offset_dir_f = (direccion/4)/32;
+	    uint32_t cInit = (direccion/4)-(offset_dir_f*32);
+		uint32_t fInit = offset_dir_f + OFFSET_FILA;
+
+
+	    uint32_t cr3_var = rcr3(); 
+	   	cr3_var = (cr3_var >> 12)<<12;
+
+	   	jugador_t* jugador = 0x0;
+	
+		if(jugador_actual == 0){
+			jugador = jugador_B;
+			attr = COLOR_A;
+		    cInit = cInit + OFFSET_COLUMNA_B;
+		}else{
+			jugador = jugador_A;
+			attr = COLOR_B;
+			//*((uint32_t*)(dir_fisica+direccion)) = *dato;
+			cInit = cInit + OFFSET_COLUMNA_A;
+		}
+		// Escritura
+		uint32_t dir_fisica = (*((*jugador).saltadora)).base_codigo;
+		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
+		
+		*((uint32_t*)(dir_fisica+direccion)) = *dato;
+		mmu_unmapearPagina(dir_fisica, cr3_var);
+		
+		screen_drawBox(fInit, cInit, 1, 1, character, attr);
+	}
+	else
+	{
+		// Se pasa de límite. largo excepción.
+		int i = 1;
+		i = i/i-1;
+	}
+	return 1;
+}
+
+uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
+	//print_hex(direccion, 8, 2, k, 0xf);
+	//k++;
+	if(direccion >= 0 && direccion < 0x1000)
+	{
+		direccion = (direccion <<20 )>>20;
+		uint8_t character = 0x0;                           /* Caracter '(space)' */
+	   	uint8_t attr = 0x0;
+	    uint32_t offset_dir_f = (direccion/4)/32;
+	    uint32_t cInit = (direccion/4)-(offset_dir_f*32);
+		uint32_t fInit = offset_dir_f + OFFSET_FILA;
+
+
+	    uint32_t cr3_var = rcr3(); 
+	   	cr3_var = (cr3_var >> 12)<<12;
+
+	   	jugador_t* jugador = 0x0;
+	
+		if(jugador_actual == 0){
+			jugador = jugador_B;
+			attr = COLOR_A;
+		    cInit = cInit + OFFSET_COLUMNA_B;
+		}else{
+			jugador = jugador_A;
+			attr = COLOR_B;
+			cInit = cInit + OFFSET_COLUMNA_A;
+		}
+		// Lectura
+		uint32_t dir_fisica = (*((*jugador).saltadora)).base_codigo;
+		mmu_mapearPagina(dir_fisica, cr3_var, dir_fisica, 1, 1, 1, 1);
+
+		*dato = *((uint32_t*)(dir_fisica+direccion));
+		mmu_unmapearPagina(dir_fisica, cr3_var);
+		
+		screen_drawBox(fInit, cInit, 1, 1, character, attr);
+	}
+	else
+	{
+		// Se pasa de límite. largo excepción.
+		int i = 1;
+		i = i/i-1;
+	}
+	return 1;
+}
+
+void print_saltador(uint32_t eip_tarea){
+	if(indice_tarea == 0)
+	{
+	 	if (eip_tarea >= 0x8000000 && eip_tarea < 0x8001000)
+	 	{
+			uint32_t offset = (eip_tarea << 20) >> 20;		
+
+	    	uint32_t offset_f = (offset/4)/32;	
+	   	 	uint32_t offset_c = (offset/4)-(offset_f*32);
+	   	 	offset_f = offset_f + OFFSET_FILA;	
+   		 	uint8_t attr = 0x0;
+    		if(jugador_actual == 0)
+	    	{
+	    		offset_c = offset_c + OFFSET_COLUMNA_A;
+	    		attr = COLOR_A;
+	    	}
+	    	else
+	    	{
+	    		offset_c = offset_c + OFFSET_COLUMNA_B;
+	    		attr = COLOR_B;
+	    	}
+	    	uint8_t text = 0x4F;
+	//    	print((uint8_t*) &text, offset_f, offset_c, attr);
+			screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
+		}
+		else
+		{
+			// No debería estar nunca en este lugar, ya que al tratarse de la eip de la tarea, 
+			// si no esta entre 0x8000000 y 0x800100 deberia haber page fault.
+			int i = 1;
+			i = i/i-1;
+		}
+	}
+}
+
 
 tarea_t* inicializar_tarea_t()
 {
@@ -307,7 +349,7 @@ void remap_saltadora(jugador_t* jug){
 	//gdt[indice_tarea].db = 0x1;
 }
 
-void debuggear(){
+void debuggear(uint32_t pila){
 	// Guardo último pantallaso
 	paused = 1;
 	for(int j = 0; j < VIDEO_FILS*VIDEO_COLS; j++)
@@ -341,12 +383,12 @@ void debuggear(){
 	print((uint8_t*) "stack", 41, 22, (C_BG_LIGHT_GREY | C_FG_BLACK));
 	
 	jugador_t* jugador = 0x0;
-	tarea_t* tarea = 0x0;
 	if(jugador_actual == 0){
 		jugador = jugador_A;
 	}else{
 		jugador = jugador_B;
 	}
+	tarea_t* tarea = 0x0;
 	if(indice_tarea == 0){
 		tarea = (*jugador).saltadora;
 	}else{
@@ -360,25 +402,26 @@ void debuggear(){
 	// tss_tarea deberia ser la direccion a la tss de la tarea actual, hay q ver si funca.
 	tss* tss_tarea = (tss*)((base_31_24<<24)|(base_23_16<<16)|(base_0_15));
 	
-	uint32_t eax = (*tss_tarea).eax;
+	uint32_t size_push = 4;
+	uint32_t eax = (*(uint32_t*)(pila + (7 * size_push)));
 	print_hex(eax, 8, 31, 4, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t ebx = (*tss_tarea).ebx;
+	uint32_t ebx = (*(uint32_t*)(pila + (4 * size_push)));
 	print_hex(ebx, 8, 31, 6, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t ecx = (*tss_tarea).ecx;
+	uint32_t ecx = (*(uint32_t*)(pila + (6 * size_push)));
 	print_hex(ecx, 8, 31, 8, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t edx = (*tss_tarea).edx;
+	uint32_t edx = (*(uint32_t*)(pila + (5 * size_push)));
 	print_hex(edx, 8, 31, 10, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t esi = (*tss_tarea).esi;
+	uint32_t esi = (*(uint32_t*)(pila + (1 * size_push)));
 	print_hex(esi, 8, 31, 12, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t edi = (*tss_tarea).edi;
+	uint32_t edi = (*(uint32_t*)(pila + (0 * size_push)));
 	print_hex(edi, 8, 31, 14, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t ebp = (*tss_tarea).ebp;
+	uint32_t ebp = (*(uint32_t*)(pila + (2 * size_push)));
 	print_hex(ebp, 8, 31, 16, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t esp = (*tss_tarea).esp;
+	uint32_t esp = (*(uint32_t*)(pila + (12 * size_push)));
 	print_hex(esp, 8, 31, 18, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t eip = (*tss_tarea).eip;
+	uint32_t eip = (*(uint32_t*)(pila + (9 * size_push)));
 	print_hex(eip, 8, 31, 20, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t cs = (uint32_t)(*tss_tarea).cs;
+	uint32_t cs = (*(uint32_t*)(pila + (10 * size_push)));
 	print_hex(cs, 4, 31, 22, (C_BG_LIGHT_GREY | C_FG_WHITE));
 	uint32_t ds = (uint32_t)(*tss_tarea).ds;
 	print_hex(ds, 4, 31, 24, (C_BG_LIGHT_GREY | C_FG_WHITE));
@@ -388,9 +431,9 @@ void debuggear(){
 	print_hex(fs, 4, 31, 28, (C_BG_LIGHT_GREY | C_FG_WHITE));
 	uint32_t gs = (uint32_t)(*tss_tarea).gs;
 	print_hex(gs, 4, 31, 30, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t ss = (uint32_t)(*tss_tarea).ss;
+	uint32_t ss = (*(uint32_t*)(pila + (13 * size_push)));
 	print_hex(ss, 4, 31, 32, (C_BG_LIGHT_GREY | C_FG_WHITE));
-	uint32_t eflags = (*tss_tarea).eflags;
+	uint32_t eflags = (*(uint32_t*)(pila + (11 * size_push)));
 	print_hex(eflags, 8, 34, 35, (C_BG_LIGHT_GREY | C_FG_WHITE));
 	uint32_t cr0 = rcr0();
 	print_hex(cr0, 8, 45, 5, (C_BG_LIGHT_GREY | C_FG_WHITE));
@@ -421,29 +464,6 @@ void resetear_juego(){
 	game_inicializar();
 	__asm __volatile("sti");
 
-}
-
-void print_saltador(uint32_t eip_tarea){
-	if(indice_tarea == 0 && eip_tarea >= 0x8000000){
-		uint32_t offset = (eip_tarea << 20) >> 20;
-
-    	uint32_t offset_f = (offset/4)/32;
-    	uint32_t offset_c = (offset/4)-(offset_f*32);
-    	uint8_t attr = 0x0;
-    	if(jugador_actual == 0)
-    	{
-    		offset_c = offset_c + OFFSET_COLUMNA_A;
-    		attr = COLOR_A;
-    	}
-    	else
-    	{
-    		offset_c = offset_c + OFFSET_COLUMNA_B;
-    		attr = COLOR_B;
-    	}
-    	uint8_t text = 0x4F;
-//    	print((uint8_t*) &text, offset_f, offset_c, attr);
-		screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
-	}
 }
 
 void actualizar_clock_tarea(){

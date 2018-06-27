@@ -13,10 +13,27 @@ void task() {
 //     breakpoint();
     void *m = (void*)0x80008db;
     uint32_t i = 100000;
-    uint32_t j = 100000;
     while(1){
-    	i = i -1;
-    	j = j / i;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
+    	i = i - 1;
+    	i = i + 1;
     }
     uint16_t *d = (uint16_t*)m;
     *d = 0xfeeb;
