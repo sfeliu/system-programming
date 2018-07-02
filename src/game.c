@@ -10,12 +10,14 @@
 #define LS_INLINE static __inline __attribute__((always_inline))
 
 
-
+// Inicializacion del juego, se inicializan las tareas y se les asigna a la estructura del scheduler.
 void game_inicializar() {
 	//tarea_t* saltadora_A = (*jugador_A).saltadora;
-	inic_w_k();
+	//inic_w_k();
+	
+	// Inicializar tarea saltadora jugador A
 	tarea_t* saltadora_A = inicializar_tarea_t();
-	uint32_t* dir_fisica_codigo = NULL; // DEfinir
+	uint32_t* dir_fisica_codigo = NULL;
 	uint32_t indice_tarea = tss_nueva_tarea(0, dir_fisica_codigo);
 	//print_hex(*dir_fisica_codigo, 8, 0, 0, 0xf);
 
@@ -27,21 +29,24 @@ void game_inicializar() {
 	//print_hex((uint32_t)(*jugador_A), 8, 0, w, 0xf);
 	//print_hex((uint32_t)(*jugador_B), 8, 0, w+1, 0xf);
 
-
-
+	// Inicializar Cazadores jugador A, cazadores_A es *tarea_t 
 	tarea_t* cazadores_A = inicializar_tarea_t();
 	for(int i = 1; i < 5; i++)
 	{
-		dir_fisica_codigo = NULL; // DEfinir
+		dir_fisica_codigo = NULL;
 		indice_tarea = tss_nueva_tarea(1, dir_fisica_codigo);
 		agregar_cazador(cazadores_A, indice_tarea, dir_fisica_codigo, i);
 	}
+
+	// Inicialización del resto del jugador A
 	(*jugador_A).cazadores = cazadores_A;
 	(*jugador_A).cant_vidas = 5;
-	(*jugador_A).ultimo_cazador = cazadores_A; // Modificación: ultimo cazador es puntero a tarea.
+	(*jugador_A).ultimo_cazador = cazadores_A;
 
+
+	// Inicializar tarea saltadora jugador B
 	tarea_t* saltadora_B = inicializar_tarea_t();
-	dir_fisica_codigo = NULL; // DEfinir
+	dir_fisica_codigo = NULL;
 	indice_tarea = tss_nueva_tarea(2, dir_fisica_codigo);
 	(*saltadora_B).indice_tss = (uint16_t)indice_tarea;
 	(*saltadora_B).base_codigo = (*dir_fisica_codigo);
@@ -49,20 +54,33 @@ void game_inicializar() {
 	(*saltadora_B).indice_reloj = 0;
 	(*jugador_B).saltadora = saltadora_B;
 
+	// Inicializar Cazadores jugador B, cazadores_B es *tarea_t 
 	tarea_t* cazadores_B = inicializar_tarea_t();
 	for(int i = 1; i < 5; i++)
 	{
-		dir_fisica_codigo = NULL; // DEfinir
+		dir_fisica_codigo = NULL;
 		indice_tarea = tss_nueva_tarea(3, dir_fisica_codigo);
 		agregar_cazador(cazadores_B, indice_tarea, dir_fisica_codigo, i);
 	}
+	// Inicialización del resto del jugador B
 	(*jugador_B).cazadores = cazadores_B; //cambio pablo
 	(*jugador_B).cant_vidas = 5; //agrego pablo
-	(*jugador_B).ultimo_cazador = cazadores_B; // Modificación: ultimo cazador es puntero a tarea.
+	(*jugador_B).ultimo_cazador = cazadores_B;
+
+	// Inicializar contador de vidas en pantalla
 	print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
 	print_hex((*jugador_B).cant_vidas, 1, 43, 45, (C_BG_BLUE | C_FG_WHITE));
 }
 
+// Como una especie de malloc para las tareas.
+tarea_t* inicializar_tarea_t()
+{
+	uint32_t direccion_nueva_tarea = mmu_prox_pag_fisica_libre_kernel();
+	tarea_t* guardarAca = (tarea_t*)direccion_nueva_tarea;
+	return guardarAca;
+}
+
+// Inicializa un cazador nuevo con los parametros de entrada, y lo coloca al final de la lista
 void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisica_codigo, uint32_t indice_cazador)
 {
 	tarea_t nueva_tarea = (tarea_t){
@@ -95,7 +113,7 @@ void agregar_cazador(tarea_t* primero, uint32_t indice_tarea, uint32_t* dir_fisi
 	}
 }
 
-
+// Devuelve indice de la tarea cazadora
 uint32_t game_numero() {
 	uint32_t temp = (uint32_t)indice_tarea;
 	//print_hex(temp, 8, 2, k, 0xf);
@@ -103,6 +121,7 @@ uint32_t game_numero() {
     return temp;
 }
 
+// Escribe dato en el offset dado por dirección de la tarea saltadora
 uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
 	//print_hex(direccion, 8, 2, k, 0xf);
 	//k++;
@@ -149,6 +168,7 @@ uint32_t game_escribir(uint32_t direccion, uint32_t* dato) {
 	return 1;
 }
 
+// Coloca lectura en dato encontrado en offset dado por dirección de la tarea saltadora
 uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 	//print_hex(direccion, 8, 2, k, 0xf);
 	//k++;
@@ -194,6 +214,7 @@ uint32_t game_leer(uint32_t direccion, uint32_t* dato) {
 	return 1;
 }
 
+// Imprime en pantalla la última eip de la tarea saltadora, en el caso que sea el turno de la misma
 void print_saltador(uint32_t eip_tarea){
 	if(indice_tarea == 0)
 	{
@@ -229,15 +250,7 @@ void print_saltador(uint32_t eip_tarea){
 	}
 }
 
-
-tarea_t* inicializar_tarea_t()
-{
-	uint32_t direccion_nueva_tarea = mmu_prox_pag_fisica_libre_kernel();
-	tarea_t* guardarAca = (tarea_t*)direccion_nueva_tarea;
-	return guardarAca;
-}
-
-
+// Se encarga de hacer el mantenimiento en caso de excepcionas, ya sea desalojando una tarea cazadora o quitarle una vida a la saltadora
 void mantenimiento_scheduler(){
 	if(reestablecer_pausa == 1){
 		reestablecer_pausa = 0;
@@ -249,7 +262,8 @@ void mantenimiento_scheduler(){
 			if((*jugador_A).cant_vidas == 1){ //si no le quedan vidas
 				(*jugador_A).cant_vidas = ((*jugador_A).cant_vidas) - 1;
 				print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
-				//resetear_juego();
+
+				finalizar_juego();
 			}else{
 				(*jugador_A).cant_vidas = ((*jugador_A).cant_vidas) - 1;
 				print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));
@@ -259,7 +273,7 @@ void mantenimiento_scheduler(){
 				tarea_t* tarea_actual = (*jugador_A).ultimo_cazador;
 				if( (*tarea_actual).indice == (*((*tarea_actual).anterior)).indice ){
 					murio_cazadora((*tarea_actual).indice, jugador_actual);
-					//resetear_juego();
+					finalizar_juego();
 				}else{
 					murio_cazadora((*tarea_actual).indice, jugador_actual);
 					(*jugador_A).ultimo_cazador	= ((*tarea_actual).anterior);		
@@ -273,7 +287,7 @@ void mantenimiento_scheduler(){
 	}else{
 		if(indice_tarea == 0){
 			if((*jugador_B).cant_vidas == 1){
-				//resetear_juego();
+				finalizar_juego();
 			}else{
 				(*jugador_B).cant_vidas = ((*jugador_B).cant_vidas) - 1;
 				print_hex((*jugador_B).cant_vidas, 1, 43, 45, (C_BG_BLUE | C_FG_WHITE));
@@ -283,7 +297,7 @@ void mantenimiento_scheduler(){
 			tarea_t* tarea_actual = (*jugador_B).ultimo_cazador;
 			if((*tarea_actual).indice == ((*(*tarea_actual).anterior)).indice ){ //si no hay mas cazadoras
 				murio_cazadora((*tarea_actual).indice, jugador_actual);
-				//resetear_juego();
+				finalizar_juego();
 			}else{
 				murio_cazadora((*tarea_actual).indice, jugador_actual);
 				(*jugador_B).ultimo_cazador	= ((*tarea_actual).anterior);		
@@ -297,7 +311,7 @@ void mantenimiento_scheduler(){
 	}
 }
 
-
+// Restaura pantalla segun lo que estaba puesto en el puntero a ultima_pantalla del scheduller
 void restaurar_pantalla(){
 	for(int j = 0; j < VIDEO_FILS*VIDEO_COLS; j++)
 	{
@@ -305,6 +319,7 @@ void restaurar_pantalla(){
 	}
 } 
 
+// Restaura a la saltadora cuando la saltadora muere, basicamente la reinicia.
 void remap_saltadora(jugador_t* jug){
 	//copio el codigo de la saltadora de nuevo
 	//print_hex(jugador_actual, 8, 35, 0, 0xf);
@@ -349,6 +364,7 @@ void remap_saltadora(jugador_t* jug){
 	//gdt[indice_tarea].db = 0x1;
 }
 
+// Guardo la pantalla previo a imprimir datos pedidos al debuggear.
 void debuggear(uint32_t pila){
 	// Guardo último pantallaso
 	paused = 1;
@@ -466,6 +482,7 @@ void resetear_juego(){
 
 }
 
+// Actualizo en pantalla el clock de la tarea actual, y en estructura de scheduller.
 void actualizar_clock_tarea(){
 	uint32_t offset_f = 46;
 	uint32_t offset_c = 15;
@@ -490,6 +507,7 @@ void actualizar_clock_tarea(){
 	screen_drawBox(offset_f, offset_c, 1, 1, text, attr);
 }
 
+// Imprime botón de MODO DEBUG, y actualiza la pausa si se cumplen la clausulas.
 void actulizar_debugging(uint8_t scanCode){
 	if(scanCode == 0x15){
 		if(debugging == 0){
@@ -505,4 +523,19 @@ void actulizar_debugging(uint8_t scanCode){
 			screen_drawBox(0, 0, 3, 12, 0x4F, (C_BG_BLACK | C_FG_BLACK));
 		}
 	}
+}
+
+// Imprime un cartelito segun el ganador y entra en un loop infinito.
+void finalizar_juego(){
+	screen_drawBox(20, 31, 7, 16, 0x4F, (C_BG_BROWN | C_FG_BROWN));
+	print((uint8_t*) " GAME OVER!", 33, 22, (C_BG_BROWN | C_FG_WHITE));
+	if(jugador_actual == 0)
+	{
+		print((uint8_t*) " PLAYER 2 WON!", 32, 24, (C_BLINK | C_BG_BROWN | C_FG_BLUE));
+	}
+	else
+	{
+		print((uint8_t*) " PLAYER 1 WON!", 32, 24, (C_BLINK | C_BG_BROWN | C_FG_RED));
+	}
+	while(1){}
 }

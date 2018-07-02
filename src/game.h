@@ -33,5 +33,6 @@ void actualizar_clock_tarea();
 void actulizar_debugging(uint8_t scanCode);
 void debuggear(uint32_t);
 void restaurar_pantalla();
+void finalizar_juego();
 
 #endif  /* !__GAME_H__ */
