@@ -32,7 +32,7 @@ idt_descriptor IDT_DESC = {
     }
 */
 
-// DPL 0 puerta de interrupcion.
+// DPL 0 puerta de interrupción.
 #define IDT_ENTRY_HARDWARE(numero)                                                                 \
     idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
     idt[numero].segsel = (uint16_t) 0xA0;                                                          \
@@ -40,7 +40,7 @@ idt_descriptor IDT_DESC = {
     idt[numero].offset_16_31 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 
 
-// DPL 3 y puerta de excepcion.
+// DPL 3 y puerta de interrupción.
 #define IDT_ENTRY_SOFTWARE(numero)                                                                 \
     idt[numero].offset_0_15 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
     idt[numero].segsel = (uint16_t) 0xA0;                                                          \
