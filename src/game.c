@@ -41,7 +41,7 @@ void game_inicializar() {
 	// Inicialización del resto del jugador A
 	(*jugador_A).cazadores = cazadores_A;
 	(*jugador_A).cant_vidas = 5;
-	(*jugador_A).ultimo_cazador = cazadores_A;
+	(*jugador_A).ultimo_cazador = (*cazadores_A).anterior;
 
 
 	// Inicializar tarea saltadora jugador B
@@ -65,7 +65,7 @@ void game_inicializar() {
 	// Inicialización del resto del jugador B
 	(*jugador_B).cazadores = cazadores_B; //cambio pablo
 	(*jugador_B).cant_vidas = 5; //agrego pablo
-	(*jugador_B).ultimo_cazador = cazadores_B;
+	(*jugador_B).ultimo_cazador = (*cazadores_B).anterior;
 
 	// Inicializar contador de vidas en pantalla
 	print_hex((*jugador_A).cant_vidas, 1, 35, 45, (C_BG_RED | C_FG_WHITE));

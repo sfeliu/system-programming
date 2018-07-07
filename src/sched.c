@@ -13,8 +13,8 @@ uint8_t caracteres_reloj[4] = {[0]=0x7C,[1]=0x2F,[2]=0x2D,[3]=0x5C};
 
 void inicializar_sched()
 {
-	indice_tarea = 0;
-	jugador_actual = 0;
+	indice_tarea = 4;
+	jugador_actual = 1;
 	debugging = 0;
 	paused = 0;
 	reestablecer_pausa = 0;
